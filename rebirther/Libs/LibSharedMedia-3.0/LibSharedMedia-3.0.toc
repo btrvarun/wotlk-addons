@@ -1,0 +1,20 @@
+## Interface: 30000
+## X-Curse-Packaged-Version: Beta-100802
+## X-Curse-Project-Name: Rebirther
+## X-Curse-Project-ID: rebirther
+## X-Curse-Repository-ID: wow/rebirther/mainline
+
+## Title: Lib: SharedMedia-3.0
+## Notes: Shared handling of media data (fonts, sounds, textures, ...) between addons.
+## Author: Elkano
+## Version: 3.0-56
+## X-Website: http://www.wowace.com/projects/libsharedmedia-3-0/
+## X-Category: Library
+
+## X-Revision: 56
+## X-Date: 2008-10-30T10:28:00Z
+
+LibStub\LibStub.lua
+CallbackHandler-1.0\CallbackHandler-1.0.lua
+
+LibSharedMedia-3.0\lib.xml

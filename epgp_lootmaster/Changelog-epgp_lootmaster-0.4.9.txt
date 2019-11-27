@@ -1,0 +1,50 @@
+------------------------------------------------------------------------
+r134 | mackatack | 2010-01-14 00:27:21 +0000 (Thu, 14 Jan 2010) | 1 line
+Changed paths:
+   A /tags/0.4.9 (from /trunk:133)
+
+tagging the 0.4.9 release
+------------------------------------------------------------------------
+r133 | mackatack | 2010-01-14 00:26:40 +0000 (Thu, 14 Jan 2010) | 1 line
+Changed paths:
+   M /trunk/ml/lootmaster_ml_ui.lua
+
+Added selections to raidinfo checker. You can now mass invite and mass whisper from the raidinfo checker.
+------------------------------------------------------------------------
+r131 | mackatack | 2010-01-13 22:19:48 +0000 (Wed, 13 Jan 2010) | 1 line
+Changed paths:
+   M /trunk/ml/lootmaster_ml_ui.lua
+
+Fixed raidinfo tool's lookup for autodetected instances.
+------------------------------------------------------------------------
+r129 | mackatack | 2010-01-03 21:12:03 +0000 (Sun, 03 Jan 2010) | 1 line
+Changed paths:
+   M /trunk/ml/lootmaster_ml_ui.lua
+
+Added auto detection of new instances to the raidinfo checker
+------------------------------------------------------------------------
+r127 | mackatack | 2009-12-14 17:22:58 +0000 (Mon, 14 Dec 2009) | 2 lines
+Changed paths:
+   M /trunk/lootmaster_player.lua
+
+Updated TOC
+Whisper system now also checking for messages in the raid channel.
+------------------------------------------------------------------------
+r126 | mackatack | 2009-12-14 17:22:26 +0000 (Mon, 14 Dec 2009) | 2 lines
+Changed paths:
+   M /trunk/ml/lootmaster_ml.lua
+   M /trunk/ml/lootmaster_ml_ui.lua
+
+Updated TOC
+Whisper system now also checking for messages in the raid channel.
+------------------------------------------------------------------------
+r125 | mackatack | 2009-12-14 17:16:39 +0000 (Mon, 14 Dec 2009) | 2 lines
+Changed paths:
+   M /trunk/epgp_lootmaster.toc
+   M /trunk/lootmaster_core.lua
+   M /trunk/ml/epgp_lootmaster_ml.toc
+   M /trunk/ml/lootmaster_ml.lua
+
+Updated TOC
+Whisper system now also checking for messages in the raid channel.
+------------------------------------------------------------------------

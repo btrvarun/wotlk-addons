@@ -1,0 +1,11 @@
+## Interface: 30300
+## Author: Blazeflack
+## Credit: Hydra, Cutepally
+## Version: 1.51
+## Title: |cff1784d1E|r|cffe5e3e3lvUI|r |cff1784d1V|r|cffe5e3e3isual|r |cff1784d1A|r|cffe5e3e3ura|r |cff1784d1T|r|cffe5e3e3imers|r
+## Notes: Allows you to change text color and add statusbars to the 'Buffs and Debuffs' auras near the minimap.
+## RequiredDeps: ElvUI
+
+locales.lua
+config.lua
+core.lua

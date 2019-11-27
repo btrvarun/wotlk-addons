@@ -1,0 +1,77 @@
+------------------------------------------------------------------------
+r452 | StingerSoft | 2010-10-17 20:18:46 +0000 (Sun, 17 Oct 2010) | 1 line
+Changed paths:
+   M /trunk/locales/ruRU.lua
+
+ruRU update
+------------------------------------------------------------------------
+r451 | kagaro | 2010-10-17 17:01:54 +0000 (Sun, 17 Oct 2010) | 1 line
+Changed paths:
+   M /trunk/modules/Tanks.lua
+
+Fixed a bug when leaving combat, causing a button to enable
+------------------------------------------------------------------------
+r450 | mojosdojo | 2010-10-17 02:58:55 +0000 (Sun, 17 Oct 2010) | 1 line
+Changed paths:
+   M /trunk/locales/deDE.lua
+   M /trunk/modules/Cooldowns.lua
+
+All cooldowns + glyphs available. Talent checks are still missing.
+------------------------------------------------------------------------
+r449 | kagaro | 2010-10-15 14:40:11 +0000 (Fri, 15 Oct 2010) | 1 line
+Changed paths:
+   M /trunk/modules/Tanks.lua
+
+Adjusted Tanks module, so we only call CheckPArtyAssignment when in raid.
+------------------------------------------------------------------------
+r448 | kagaro | 2010-10-14 19:45:19 +0000 (Thu, 14 Oct 2010) | 1 line
+Changed paths:
+   M /trunk/locales/enUS.lua
+   M /trunk/modules/Tanks.lua
+   M /trunk/oRA3.lua
+
+Updated Tanks module. For tanks set via SetRole and not MAINTANK, when removed form the list, they will not float back up during role changes unless they are raid promoted to MT which clears the deletion mark.
+------------------------------------------------------------------------
+r447 | mojosdojo | 2010-10-14 19:28:23 +0000 (Thu, 14 Oct 2010) | 1 line
+Changed paths:
+   M /trunk/modules/Cooldowns.lua
+
+More cooldowns confirmed. Missing Warlock, Warrior, DK.
+------------------------------------------------------------------------
+r446 | mysticalos | 2010-10-14 17:25:32 +0000 (Thu, 14 Oct 2010) | 1 line
+Changed paths:
+   M /trunk/modules/Cooldowns.lua
+
+Finished updating glyph CDs
+------------------------------------------------------------------------
+r445 | rabbit | 2010-10-14 17:18:54 +0000 (Thu, 14 Oct 2010) | 1 line
+Changed paths:
+   M /trunk/modules/Cooldowns.lua
+   M /trunk/oRA3.lua
+
+Adjust frame position.
+------------------------------------------------------------------------
+r444 | mojosdojo | 2010-10-14 16:44:59 +0000 (Thu, 14 Oct 2010) | 1 line
+Changed paths:
+   M /trunk/modules/Cooldowns.lua
+
+First part of cooldowns update. Still missing talent checks.
+------------------------------------------------------------------------
+r443 | kagaro | 2010-10-14 16:13:58 +0000 (Thu, 14 Oct 2010) | 1 line
+Changed paths:
+   M /trunk/oRA3.lua
+
+Added check for raid members self picking roles i.e. instead of just using Set Main Tank option a raid leader can do a role check and assign tanks via player selections.
+------------------------------------------------------------------------
+r442 | starinnia | 2010-10-14 14:02:53 +0000 (Thu, 14 Oct 2010) | 1 line
+Changed paths:
+   M /trunk/modules/Cooldowns.lua
+
+update Rebirth spellId and cooldown duration
+------------------------------------------------------------------------
+r441 | rabbit | 2010-08-09 11:45:21 +0000 (Mon, 09 Aug 2010) | 1 line
+Changed paths:
+   M /trunk/modules/Invite.lua
+
+Fix BN invites.
+------------------------------------------------------------------------

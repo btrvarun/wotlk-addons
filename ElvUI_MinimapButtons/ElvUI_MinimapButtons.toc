@@ -1,0 +1,8 @@
+﻿## Interface: 30300
+## Title: |cff1784d1E|r|cffe5e3e3lvUI|r |cff1784d1M|r|cffe5e3e3inimap|r |cff1784d1B|r|cffe5e3e3uttons|r
+## Author: Pinya, Bunny
+## Version: 1.01
+## RequiredDeps: ElvUI
+
+locales\load_locales.xml
+ElvUI_MinimapButtons.lua
