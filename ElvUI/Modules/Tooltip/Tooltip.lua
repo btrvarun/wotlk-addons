@@ -395,12 +395,12 @@ function TT:GameTooltip_OnTooltipSetUnit(tt)
 			if UnitIsPlayer(unitTarget) and not UnitHasVehicleUI(unitTarget) then
 				local _, class = UnitClass(unitTarget)
 				targetColor = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
-
-				if not targetColor then
-					targetColor = RAID_CLASS_COLORS.PRIEST
-				end
 			else
 				targetColor = E.db.tooltip.useCustomFactionColors and E.db.tooltip.factionColors[UnitReaction(unitTarget, "player")] or FACTION_BAR_COLORS[UnitReaction(unitTarget, "player")]
+			end
+
+			if not targetColor then
+				targetColor = RAID_CLASS_COLORS.PRIEST
 			end
 
 			tt:AddDoubleLine(format("%s:", TARGET), format("|cff%02x%02x%02x%s|r", targetColor.r * 255, targetColor.g * 255, targetColor.b * 255, UnitName(unitTarget)))
@@ -548,22 +548,20 @@ function TT:GameTooltip_ShowStatusBar(tt)
 end
 
 function TT:CheckBackdropColor(tt)
-	if not tt:IsShown() then return end
-
-	local r, g, b = tt:GetBackdropColor()
-	if r and g and b then
-		r, g, b = E:Round(r, 1), E:Round(g, 1), E:Round(b, 1)
-
-		local red, green, blue = unpack(E.media.backdropfadecolor)
-		if r ~= red or g ~= green or b ~= blue then
-			tt:SetBackdropColor(red, green, blue, self.db.colorAlpha)
-		end
+	if tt:GetAnchorType() == "ANCHOR_CURSOR" then
+		local r, g, b = unpack(E.media.backdropfadecolor, 1, 3)
+		tt:SetBackdropColor(r, g, b, self.db.colorAlpha)
 	end
 end
 
 function TT:SetStyle(tt)
-	tt:SetTemplate("Transparent", nil, true) --ignore updates
-	local r, g, b = tt:GetBackdropColor()
+	if not tt.template then
+		tt:SetTemplate("Transparent")
+	else
+		tt:SetBackdropBorderColor(unpack(E.media.bordercolor, 1, 3))
+	end
+
+	local r, g, b = unpack(E.media.backdropfadecolor, 1, 3)
 	tt:SetBackdropColor(r, g, b, self.db.colorAlpha)
 end
 

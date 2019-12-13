@@ -51,14 +51,14 @@ function S:HandleButton(button, strip, isDeclineButton, useCreateBackdrop, noSet
 		local middle = _G[buttonName.."Middle"]
 		local right = _G[buttonName.."Right"]
 
-		if left then left:Kill() end
-		if middle then middle:Kill() end
-		if right then right:Kill() end
+		if left then left:SetAlpha(0) end
+		if middle then middle:SetAlpha(0) end
+		if right then right:SetAlpha(0) end
 	end
 
-	if button.Left then button.Left:Kill() end
-	if button.Middle then button.Middle:Kill() end
-	if button.Right then button.Right:Kill() end
+	if button.Left then button.Left:SetAlpha(0) end
+	if button.Middle then button.Middle:SetAlpha(0) end
+	if button.Right then button.Right:SetAlpha(0) end
 
 	if button.SetNormalTexture then button:SetNormalTexture("") end
 	if button.SetHighlightTexture then button:SetHighlightTexture("") end
@@ -358,6 +358,8 @@ function S:HandleCheckBox(frame, noBackdrop, noReplaceTextures, forceSaturation)
 end
 
 function S:HandleColorSwatch(frame, size)
+	if frame.isSkinned then return end
+
 	frame:StripTextures()
 	frame:CreateBackdrop("Default")
 	frame.backdrop:SetFrameLevel(frame:GetFrameLevel())
@@ -366,9 +368,12 @@ function S:HandleColorSwatch(frame, size)
 		frame:Size(size)
 	end
 
-	frame:GetNormalTexture():SetTexture(E.media.blankTex)
-	frame:GetNormalTexture():ClearAllPoints()
-	frame:GetNormalTexture():SetInside(frame.backdrop)
+	local normalTexture = frame:GetNormalTexture()
+	normalTexture:SetTexture(E.media.blankTex)
+	normalTexture:ClearAllPoints()
+	normalTexture:SetInside(frame.backdrop)
+
+	frame.isSkinned = true
 end
 
 function S:HandleIcon(icon, parent)

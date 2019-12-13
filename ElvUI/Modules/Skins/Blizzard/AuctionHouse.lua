@@ -10,15 +10,17 @@ local GetAuctionSellItemInfo = GetAuctionSellItemInfo
 local GetItemQualityColor = GetItemQualityColor
 local hooksecurefunc = hooksecurefunc
 
-local NUM_BROWSE_TO_DISPLAY = NUM_BROWSE_TO_DISPLAY
-
 local function LoadSkin()
 	if not E.private.skins.blizzard.enable or not E.private.skins.blizzard.auctionhouse then return end
 
 	AuctionFrame:StripTextures(true)
 	AuctionFrame:CreateBackdrop("Transparent")
-	AuctionFrame.backdrop:Point("TOPLEFT", 10, 0)
+	AuctionFrame.backdrop:Point("TOPLEFT", 12, 0)
 	AuctionFrame.backdrop:Point("BOTTOMRIGHT", 0, 0)
+
+	S:SetUIPanelWindowInfo(AuctionFrame, "xoffset", -1)
+	S:SetUIPanelWindowInfo(AuctionFrame, "yoffset", -12)
+--	S:SetUIPanelWindowInfo(AuctionFrame, "width", 821)
 
 	local buttons = {
 		BrowseSearchButton,
@@ -250,9 +252,9 @@ local function LoadSkin()
 	AuctionProgressBar:SetStatusBarColor(1, 1, 0)
 
 	local frames = {
-		["Browse"] = NUM_BROWSE_TO_DISPLAY,
-		["Auctions"] = NUM_AUCTIONS_TO_DISPLAY,
-		["Bid"] = NUM_BIDS_TO_DISPLAY
+		["Browse"] = 8,		-- NUM_BROWSE_TO_DISPLAY
+		["Auctions"] = 9,	-- NUM_AUCTIONS_TO_DISPLAY
+		["Bid"] = 9			-- NUM_BIDS_TO_DISPLAY
 	}
 
 	for frameName, numButtons in pairs(frames) do
