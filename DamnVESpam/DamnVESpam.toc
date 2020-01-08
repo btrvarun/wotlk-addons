@@ -1,0 +1,13 @@
+## Interface: 50400
+## Title: Damn VE Spam
+## Notes: Hides combat healing spam when player has Vampiric Embrace buff
+## Version: 1.2.1-b530d60
+
+## Author: Christopher Rosell
+## X-Email: chrippa@gmail.com
+## X-Category: Priest
+
+## LoadManagers: AddonLoader
+## X-LoadOn-Class: Priest
+
+DamnVESpam.lua
