@@ -5,18 +5,10 @@ local M = E:GetModule("Misc")
 local CH = E:GetModule("Chat")
 
 local _G = _G
-local ipairs = ipairs
-local next = next
-local pairs = pairs
-local sub = string.sub
-local gsub = string.gsub
-local floor = math.floor
-local match = string.match
-local gmatch = string.gmatch
-local format = string.format
-local lower = string.lower
-local tinsert = table.insert
-local tremove = table.remove
+local ipairs, next, pairs = ipairs, next, pairs
+local sub, gsub, floor = string.sub, string.gsub, math.floor
+local match, gmatch, format, lower = string.match, string.gmatch, string.format, string.lower
+local tinsert, tremove = table.insert, table.remove
 
 local GetGuildInfo = GetGuildInfo
 local IsInGuild = IsInGuild
@@ -37,8 +29,8 @@ local npcTitleMap = {}
 
 local function UpdateNameplateByName(name)
 	for frame in pairs(NP.VisiblePlates) do
-		if frame and frame:IsShown() and frame.UnitName == name then
-			NP:UpdateAllFrame(frame)
+		if frame.UnitName == name then
+			NP.OnShow(frame:GetParent(), nil, true)
 		end
 	end
 end
@@ -59,7 +51,13 @@ function ENP:UPDATE_MOUSEOVER_UNIT()
 
 		if E.db.enhanced.nameplates.titleCache then
 			local guildName = GetGuildInfo("mouseover")
-			if not guildName then return end
+			if not guildName then
+				if EnhancedDB.UnitTitle[name] then
+					EnhancedDB.UnitTitle[name] = nil
+					UpdateNameplateByName(name)
+				end
+				return
+			end
 
 			if not guildMap[guildName] then
 				tinsert(EnhancedDB.GuildList, guildName)
@@ -145,10 +143,10 @@ local separatorMap = {
 	["{"] = "{%s}"
 }
 
-local function UpdateElement_NameHook(self, frame)
+local function Update_NameHook(self, frame)
 	if not E.db.enhanced.nameplates.titleCache then return end
 
-	if self.db.units[frame.UnitType].healthbar.enable or (self.db.alwaysShowTargetHealth and frame.isTarget) then
+	if frame.Health:IsShown() then
 		if frame.Title then
 			frame.Title:SetText()
 			frame.Title:Hide()
@@ -177,7 +175,7 @@ local function UpdateElement_NameHook(self, frame)
 				shown = true
 			end
 		end
-	
+
 		if shown then
 			if not frame.Title then
 				frame.Title = frame:CreateFontString(nil, "OVERLAY")
@@ -212,21 +210,39 @@ local function UpdateElement_NameHook(self, frame)
 
 		local db = E.db.enhanced.nameplates.npc
 		frame.Title:SetFont(E.LSM:Fetch("font", db.font), db.fontSize, db.fontOutline)
-		frame.Title:SetTextColor(db.color.r, db.color.g, db.color.b)
+		
+		if E.db.enhanced.nameplates.npc.reactionColor then
+			local db = self.db.colors
+			if frame.UnitReaction == 5 then -- friendly
+				r, g, b = db.reactions.good.r, db.reactions.good.g, db.reactions.good.b
+			elseif frame.UnitReaction == 1 or frame.UnitReaction == 2 then -- hostile
+				r, g, b = db.reactions.bad.r, db.reactions.bad.g, db.reactions.bad.b
+			elseif frame.UnitReaction == 4  then -- neutral
+				r, g, b = db.reactions.neutral.r, db.reactions.neutral.g, db.reactions.neutral.b
+			else
+				r, g, b = 1, 1, 1
+			end
+			frame.Title:SetTextColor(r, g, b)
+		else 
+			frame.Title:SetTextColor(db.color.r, db.color.g, db.color.b)
+		end
+		
 		frame.Title:SetPoint("TOP", frame.Name, "BOTTOM")
 		frame.Title:SetFormattedText(separatorMap[db.separator], EnhancedDB.NPCList[EnhancedDB.UnitTitle[frame.UnitName]])
 		frame.Title:Show()
+	elseif frame.Title then
+		frame.Title:SetText("")
 	end
 end
 
 function ENP:TitleCache()
 	if E.db.enhanced.nameplates.titleCache then
-		if not self:IsHooked(NP, "UpdateElement_Name") then
-			self:Hook(NP, "UpdateElement_Name", UpdateElement_NameHook)
+		if not self:IsHooked(NP, "Update_Name") then
+			self:Hook(NP, "Update_Name", Update_NameHook)
 		end
 	else
-		if self:IsHooked(NP, "UpdateElement_Name") then
-			self:Unhook(NP, "UpdateElement_Name")
+		if self:IsHooked(NP, "Update_Name") then
+			self:Unhook(NP, "Update_Name")
 		end
 	end
 end
@@ -441,8 +457,8 @@ function ENP:FindNameplateByChatMsg(event, msg, author, _, _, _, _, _, channelID
 	end
 end
 
-local function OnShowHook(frame)
-	NP._OnShow(frame)
+local function OnShowHook(frame, ...)
+	ENP.hooks[NP].OnShow(frame, ...)
 
 	if frame.UnitFrame.bubbleFrame then
 		frame.UnitFrame.bubbleFrame = nil
@@ -512,14 +528,12 @@ function ENP:UpdateAllSettings()
 		end
 	end
 	if E.db.enhanced.nameplates.chatBubbles then
-		if not NP._OnShow then
-			NP._OnShow = NP.OnShow
-			NP.OnShow = OnShowHook
+		if not ENP:IsHooked(NP, "OnShow") then
+			ENP:RawHook(NP, "OnShow", OnShowHook, true)
 		end
 	else
-		if NP._OnShow then
-			NP.OnShow = NP._OnShow
-			NP._OnShow = nil
+		if ENP:IsHooked(NP, "OnShow") then
+			ENP:Unhook(NP, "OnShow")
 		end
 	end
 end

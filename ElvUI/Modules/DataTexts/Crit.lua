@@ -25,19 +25,17 @@ local displayModifierString = ""
 local lastPanel
 
 local function OnEvent(self)
+	lastPanel = self
+
 	if E.Role == "Caster"then
 		critRating = GetSpellCritChance(2)
+	elseif E.myclass == "HUNTER" then
+		critRating = GetRangedCritChance()
 	else
-		if E.myclass == "HUNTER" then
-			critRating = GetRangedCritChance()
-		else
-			critRating = GetCritChance()
-		end
+		critRating = GetCritChance()
 	end
 
 	self.text:SetFormattedText(displayModifierString, critRating)
-
-	lastPanel = self
 end
 
 local function OnEnter(self)
@@ -72,4 +70,4 @@ local function ValueColorUpdate(hex)
 end
 E.valueColorUpdateFuncs[ValueColorUpdate] = true
 
-DT:RegisterDatatext("Crit Chance", {"PLAYER_DAMAGE_DONE_MODS"}, OnEvent, nil, nil, OnEnter, nil, MELEE_CRIT_CHANCE)
+DT:RegisterDatatext("Crit Chance", {"ACTIVE_TALENT_GROUP_CHANGED", "PLAYER_TALENT_UPDATE", "PLAYER_DAMAGE_DONE_MODS"}, OnEvent, nil, nil, OnEnter, nil, MELEE_CRIT_CHANCE)

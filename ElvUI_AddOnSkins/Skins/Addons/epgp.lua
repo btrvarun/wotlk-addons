@@ -2,6 +2,7 @@ local E, L, V, P, G = unpack(ElvUI)
 local S = E:GetModule("Skins")
 
 -- EPGP 5.5.19
+-- https://www.curseforge.com/wow/addons/epgp-dkp-reloaded/files/442647
 
 local function epgp()
 	if not E.private.addOnSkins.EPGP then return end
@@ -84,7 +85,7 @@ local function epgp()
 		S:HandleNextPrevButton(parentFrame.decButton, "down")
 		parentFrame.decButton:Size(14)
 
-		S:HandleNextPrevButton(parentFrame.incButton, "down")
+		S:HandleNextPrevButton(parentFrame.incButton, "up")
 		parentFrame.incButton:Size(14)
 
 		-- Log Frame

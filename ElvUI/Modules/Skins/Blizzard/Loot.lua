@@ -19,7 +19,7 @@ local ITEMS = ITEMS
 local LOOT = LOOT
 local LOOTFRAME_NUMBUTTONS = LOOTFRAME_NUMBUTTONS
 
-local function LoadSkin()
+S:AddCallback("Skin_Loot", function()
 	if E.private.general.loot then return end
 	if not E.private.skins.blizzard.enable or not E.private.skins.blizzard.loot then return end
 
@@ -27,11 +27,10 @@ local function LoadSkin()
 	LootFrame:StripTextures()
 
 	LootFrame:CreateBackdrop("Transparent")
-	LootFrame.backdrop:Point("TOPLEFT", 14, -54)
-	LootFrame.backdrop:Point("BOTTOMRIGHT", -77, 5)
+	LootFrame.backdrop:Point("TOPLEFT", 16, -54)
+	LootFrame.backdrop:Point("BOTTOMRIGHT", -77, 8)
 
-	LootFrame:SetClampRectInsets(14, -77, -54, 5)
-	LootFrame:SetHitRectInsets(14, 77, 54, 5)
+	S:SetBackdropHitRect(LootFrame, nil, true)
 
 	LootFramePortraitOverlay:SetParent(E.HiddenFrame)
 
@@ -40,7 +39,7 @@ local function LoadSkin()
 	LootFrameUpButton:Size(24)
 
 	S:HandleNextPrevButton(LootFrameDownButton)
-	LootFrameDownButton:Point("BOTTOMLEFT", 145, 20)
+	LootFrameDownButton:Point("BOTTOMLEFT", 147, 21)
 	LootFrameDownButton:Size(24)
 
 	LootFrame:EnableMouseWheel(true)
@@ -138,9 +137,9 @@ local function LoadSkin()
 			end
 		end
 	end)
-end
+end)
 
-local function LoadRollSkin()
+S:AddCallback("Skin_LootRoll", function()
 	if E.private.general.lootRoll then return end
 	if not E.private.skins.blizzard.enable or not E.private.skins.blizzard.lootRoll then return end
 
@@ -165,6 +164,7 @@ local function LoadRollSkin()
 		local statusBar = _G[frameName.."Timer"]
 		local decoration = _G[frameName.."Decoration"]
 
+		frame:EnableMouse(true)
 		frame:StripTextures()
 		frame:ClearAllPoints()
 
@@ -193,9 +193,6 @@ local function LoadRollSkin()
 
 		_G[frameName.."Corner"]:Hide()
 
-		_G["GroupLootFrame"..i]:HookScript("OnShow", OnShow)
+		frame:HookScript("OnShow", OnShow)
 	end
-end
-
-S:AddCallback("Skin_Loot", LoadSkin)
-S:AddCallback("Skin_LootRoll", LoadRollSkin)
+end)

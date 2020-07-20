@@ -92,27 +92,57 @@ local addonList = {
 	"BeanCounter",
 	"Informant",
 	"AuctioneerSuite",
+	"Altoholic",
+	"LoseControl",
+	"SilverDragon",
+	"_NPCScanOverlay",
+	"Examiner",
+	"Mapster",
+	"ArkInventory",
+	"QuestGuru",
+	"QuestGuru_Tracker",
+	"SatrinaBuffFrame",
+	"LootCouncil_Lite",
+}
+local addonAlias = {
+	["DBM"] = "DBM-Core",
+	["_NPCScanOverlay"] = "_NPCScan.Overlay",
 }
 
-AS.addOns = {}
+AS.addons = {}
 
-for i = 1, GetNumAddOns() do
-	local name, _, _, enabled = GetAddOnInfo(i)
-	AS.addOns[lower(name)] = enabled ~= nil
+do
+	local temp = {}
+	for alias, addonName in pairs(addonAlias) do
+		temp[lower(addonName)] = alias
+	end
+
+	for i = 1, GetNumAddOns() do
+		local name, _, _, enabled = GetAddOnInfo(i)
+		AS.addons[lower(name)] = enabled ~= nil
+
+		if temp[name] then
+			AS.addons[lower(temp[name])] = enabled ~= nil
+		end
+	end
+
+	for _, addonName in ipairs(addonList) do
+		V.addOnSkins[addonName] = true
+	end
 end
 
 function AS:CheckAddOn(addon)
-	return self.addOns[lower(addon)] or false
+	return self.addons[lower(addonAlias[addon] or addon)] or false
 end
 
 function AS:IsAddonExist(addon)
-	return self.addOns[lower(addon)] ~= nil
+	return self.addons[lower(addonAlias[addon] or addon)] ~= nil
 end
 
 function AS:RegisterAddonOption(addonName, options)
-	if select(6, GetAddOnInfo(addonName)) == "MISSING" then return end
+	if select(6, GetAddOnInfo(addonAlias[addonName] or addonName)) == "MISSING" then return end
 
-	options.args.skins.args.addOns.args[addonName] = {
+	options[addonName] = {
 		type = "toggle",
 		name = addonName,
 		desc = L["TOGGLESKIN_DESC"],
@@ -120,85 +150,46 @@ function AS:RegisterAddonOption(addonName, options)
 	}
 end
 
-local function ColorizeSettingName(settingName)
-	return string.format("|cff1784d1%s|r", settingName)
-end
-
-local positionValues = {
-	TOPLEFT = "TOPLEFT",
-	LEFT = "LEFT",
-	BOTTOMLEFT = "BOTTOMLEFT",
-	RIGHT = "RIGHT",
-	TOPRIGHT = "TOPRIGHT",
-	BOTTOMRIGHT = "BOTTOMRIGHT",
-	CENTER = "CENTER",
-	TOP = "TOP",
-	BOTTOM = "BOTTOM"
-}
-
-local backdropValues = {
-	["Default"] = L["Default"],
-	["Transparent"] = L["Transparent"],
-	["NoBackdrop"] = NONE
-}
-
 local function getOptions()
+	local positionValues = {
+		TOPLEFT = "TOPLEFT",
+		LEFT = "LEFT",
+		BOTTOMLEFT = "BOTTOMLEFT",
+		RIGHT = "RIGHT",
+		TOPRIGHT = "TOPRIGHT",
+		BOTTOMRIGHT = "BOTTOMRIGHT",
+		CENTER = "CENTER",
+		TOP = "TOP",
+		BOTTOM = "BOTTOM"
+	}
+
+	local backdropValues = {
+		["Default"] = L["Default"],
+		["Transparent"] = L["Transparent"],
+		["NoBackdrop"] = NONE
+	}
+
 	local options = {
 		order = 50,
 		type = "group",
 		childGroups = "tab",
-		name = ColorizeSettingName(L["AddOn Skins"]),
+		name = string.format("|cff1784d1%s|r", L["AddOn Skins"]),
 		args = {
 			skins = {
 				order = 1,
 				type = "group",
 				childGroups = "tab",
 				name = L["Skins"],
+				get = function(info) return E.private.addOnSkins[info[#info]] end,
+				set = function(info, value)
+					E.private.addOnSkins[info[#info]] = value
+					E:StaticPopup_Show("PRIVATE_RL")
+				end,
 				args = {
 					header = {
 						order = 1,
 						type = "header",
 						name = L["Skins"]
-					},
-					addOns = {
-						order = 1,
-						type = "group",
-						name = L["AddOn Skins"],
-						get = function(info) return E.private.addOnSkins[info[#info]] end,
-						set = function(info, value)
-							E.private.addOnSkins[info[#info]] = value
-							E:StaticPopup_Show("PRIVATE_RL")
-						end,
-						args = {
-							header = {
-								order = 1,
-								type = "header",
-								name = L["AddOn Skins"]
-							}
-						}
-					},
-					blizzard = {
-						order = 2,
-						type = "group",
-						name = L["Blizzard Skins"],
-						get = function(info) return E.private.addOnSkins[info[#info]] end,
-						set = function(info, value)
-							E.private.addOnSkins[info[#info]] = value
-							E:StaticPopup_Show("PRIVATE_RL")
-						end,
-						args = {
-							header = {
-								order = 1,
-								type = "header",
-								name = L["Blizzard Skins"]
-							},
-							Blizzard_WorldStateFrame = {
-								order = 2,
-								type = "toggle",
-								name = "WorldStateFrame",
-								desc = L["TOGGLESKIN_DESC"],
-							}
-						}
 					}
 				}
 			},
@@ -384,6 +375,12 @@ local function getOptions()
 									["MONOCHROMEOUTLINE"] = "MONOCROMEOUTLINE",
 									["THICKOUTLINE"] = "THICKOUTLINE"
 								}
+							},
+							dbmTemplate = {
+								order = 5,
+								type = "select",
+								name = L["Template"],
+								values = backdropValues
 							}
 						}
 					},
@@ -523,7 +520,8 @@ local function getOptions()
 						values = {
 							["Recount"] = "Recount",
 							["Omen"] = "Omen",
-							["Skada"] = "Skada"
+							["Skada"] = "Skada",
+							["Details"] = "Details"
 						},
 						disabled = function() return E.db.addOnSkins.embed.embedType == "DISABLE" end
 					},
@@ -534,7 +532,8 @@ local function getOptions()
 						values = {
 							["Recount"] = "Recount",
 							["Omen"] = "Omen",
-							["Skada"] = "Skada"
+							["Skada"] = "Skada",
+							["Details"] = "Details"
 						},
 						disabled = function() return E.db.addOnSkins.embed.embedType ~= "DOUBLE" end
 					},
@@ -566,8 +565,10 @@ local function getOptions()
 		}
 	}
 
+	local target = options.args.skins.args
+
 	for _, addonName in ipairs(addonList) do
-		AS:RegisterAddonOption(addonName, options)
+		AS:RegisterAddonOption(addonName, target)
 	end
 
 	E.Options.args.addOnSkins = options

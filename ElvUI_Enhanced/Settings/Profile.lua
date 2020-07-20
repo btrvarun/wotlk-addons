@@ -13,10 +13,11 @@ P.enhanced = {
 		undressButton = false,
 		alreadyKnown = false,
 	},
-	actionbars = {
-		transparentActionbars = {
-			transparentBackdrops = false,
-			transparentButtons = false
+	actionbar = {
+		keyPressAnimation = {
+			color = {r = 1, g = 1, b = 1},
+			scale = 1.5,
+			rotation = 90,
 		}
 	},
 	blizzard = {
@@ -31,17 +32,22 @@ P.enhanced = {
 			font = "PT Sans Narrow",
 			fontSize = 12,
 			fontOutline = "NONE"
-		}
+		},
+		takeAllMail = false
 	},
 	chat = {
 		dpsLinks = false,
 	},
 	character = {
 		animations = false,
-		background = false,
+		characterBackground = false,
 		petBackground = false,
 		inspectBackground = false,
 		companionBackground = false,
+		desaturateCharacter = false,
+		desaturatePet = false,
+		desaturateInspect = false,
+		desaturateCompanion = false
 	},
 	equipment = {
 		enable = false,
@@ -63,12 +69,34 @@ P.enhanced = {
 			yOffset = 0
 		}
 	},
+	map = {
+		fogClear = {
+			enable = false,
+			color = {r = 0.5, g = 0.5, b = 0.5, a = 1}
+		}
+	},
 	minimap = {
 		location = false,
 		showlocationdigits = true,
 		locationdigits = 1,
 		hideincombat = false,
 		fadeindelay = 5,
+		buttonGrabber = {
+			backdrop = false,
+			backdropSpacing = 1,
+			mouseover = false,
+			alpha = 1,
+			buttonSize = 22,
+			buttonSpacing = 0,
+			buttonsPerRow = 1,
+			growFrom = "TOPLEFT",
+			insideMinimap = {
+				enable = true,
+				position = "TOPLEFT",
+				xOffset = -1,
+				yOffset = 1
+			}
+		}
 	},
 	nameplates = {
 		classCache = false,
@@ -97,6 +125,7 @@ P.enhanced = {
 			font = "PT Sans Narrow",
 			fontSize = 11,
 			fontOutline = "OUTLINE",
+			reactionColor = false,
 			color = {r = 1, g = 1, b = 1},
 			separator = " ",
 		}
@@ -111,6 +140,7 @@ P.enhanced = {
 		},
 		progressInfo = {
 			enable = false,
+			checkAchievements = false,
 			checkPlayer = false,
 			modifier = "SHIFT",
 			tiers = {

@@ -2,6 +2,7 @@ local E, L, V, P, G = unpack(ElvUI)
 local S = E:GetModule("Skins")
 
 -- Doom_CooldownPulse 1.2.3
+-- https://www.curseforge.com/wow/addons/doomcooldownpulse/files/400638
 
 local function LoadSkin()
 	if not E.private.addOnSkins.Doom_CooldownPulse then return end
@@ -11,7 +12,7 @@ local function LoadSkin()
 
 	Doom_CooldownPulse = frame
 	frame:SetTemplate()
-	frame.icon = select(1, frame:GetRegions())
+	frame.icon = frame:GetRegions()
 
 	frame.icon:SetParent(frame)
 	frame.icon:SetDrawLayer("ARTWORK")

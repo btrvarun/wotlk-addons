@@ -2,6 +2,7 @@ local E, L, V, P, G = unpack(ElvUI)
 local S = E:GetModule("Skins")
 
 -- RaidRoll 4.4.15
+-- https://www.curseforge.com/wow/addons/raid-roll/files/450070
 
 local function LoadSkin()
 	if not E.private.addOnSkins.RaidRoll then return end
@@ -11,6 +12,7 @@ local function LoadSkin()
 
 	S:HandleCloseButton(RR_Close_Button, RR_RollFrame)
 
+	RaidRoll_Slider_ID:SetHitRectInsets(0, 0, 0, 0)
 	S:HandleSliderFrame(RaidRoll_Slider_ID)
 
 	S:HandleButton(RaidRoll_AnnounceWinnerButton)
@@ -36,6 +38,30 @@ local function LoadSkin()
 	S:HandleButton(Raid_Roll_ClearSymbols)
 	S:HandleButton(Raid_Roll_ClearRolls)
 	S:HandleButton(RaidRoll_ExtraOptionButton)
+
+	for i = 1, 5 do
+		local f = _G["Raid_Roll_SetSymbol"..i]
+		f:ClearAllPoints()
+		f:SetPoint("TOPLEFT", _G["RR_RollerPos"..i], "TOPRIGHT", -15, -1)
+		f:SetPoint("BOTTOMRIGHT", _G["RR_Rolled"..i], "BOTTOMLEFT", 45, -1)
+
+		local highlight = f:GetHighlightTexture()
+		highlight:SetTexture(E.Media.Textures.Highlight)
+		highlight:SetVertexColor(0.9, 0.9, 0.9, 0.35)
+	end
+
+	if E.private.general.replaceBlizzFonts and GetLocale() ~= "zhCN" then
+		local fontTemplate = RR_Roller1.FontTemplate
+		local function updateFont(self, font, size, flag)
+			self.SetFont = nil
+			fontTemplate(self, nil, nil, flag)
+			self.SetFont = updateFont
+		end
+
+		for i = 1, 5 do
+			_G["RR_Roller"..i].SetFont = updateFont
+		end
+	end
 end
 
 local function LootTrackerSkin()

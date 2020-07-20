@@ -122,7 +122,7 @@ local function GeneralOptions()
 end
 
 local function ActionbarOptions()
-	local ETB = E:GetModule("Enhanced_TransparentBackdrops")
+	local KPA = E:GetModule("Enhanced_KeyPressAnimation")
 
 	return {
 		type = "group",
@@ -133,30 +133,58 @@ local function ActionbarOptions()
 				type = "header",
 				name = EE:ColorizeSettingName(L["ActionBars"])
 			},
-			transparentActionbars = {
+			keyPressAnimation = {
 				order = 1,
 				type = "group",
-				name = L["Transparent ActionBars"],
+				name = L["Key Press Animation"],
 				guiInline = true,
-				get = function(info) return E.db.enhanced.actionbars.transparentActionbars[info[#info]] end,
+				get = function(info) return E.db.enhanced.actionbar.keyPressAnimation[info[#info]] end,
 				set = function(info, value)
-					E.db.enhanced.actionbars.transparentActionbars[info[#info]] = value
-					ETB:StyleBackdrops()
+					E.db.enhanced.actionbar.keyPressAnimation[info[#info]] = value
+					KPA:UpdateSetting()
 				end,
-				disabled = function() return not E.private.actionbar.enable end,
 				args = {
-					transparentBackdrops = {
+					enable = {
 						order = 1,
 						type = "toggle",
-						name = L["Transparent Backdrop"],
-						desc = L["Sets actionbars' backgrounds to transparent template."]
+						name = L["Enable"],
+						get = function(info) return E.private.enhanced.actionbar.keyPressAnimation end,
+						set = function(info, value)
+							E.private.enhanced.actionbar.keyPressAnimation = value
+							E:StaticPopup_Show("PRIVATE_RL")
+						end,
 					},
-					transparentButtons = {
+					color = {
 						order = 2,
-						type = "toggle",
-						name = L["Transparent Buttons"],
-						desc = L["Sets actionbars buttons' backgrounds to transparent template."]
-					}
+						type = "color",
+						name = L["COLOR"],
+						get = function(info)
+							local t = E.db.enhanced.actionbar.keyPressAnimation[info[#info]]
+							local d = P.enhanced.actionbar.keyPressAnimation[info[#info]]
+							return t.r, t.g, t.b, t.a, d.r, d.g, d.b
+						end,
+						set = function(info, r, g, b)
+							local t = E.db.enhanced.actionbar.keyPressAnimation[info[#info]]
+							t.r, t.g, t.b = r, g, b
+							KPA:UpdateSetting()
+						end,
+						disabled = function() return not E.private.enhanced.actionbar.keyPressAnimation end,
+					},
+					scale = {
+						order = 3,
+						type = "range",
+						min = 1, max = 3, step = 0.1,
+						isPercent = true,
+						name = L["Scale"],
+						disabled = function() return not E.private.enhanced.actionbar.keyPressAnimation end,
+					},
+					rotation = {
+						order = 4,
+						type = "range",
+						min = 0, max = 360, step = 1,
+						name = L["Rotation"],
+						disabled = function() return not E.private.enhanced.actionbar.keyPressAnimation end,
+					},
 				}
 			}
 		}
@@ -166,6 +194,8 @@ end
 local function BlizzardOptions()
 	local B = E:GetModule("Enhanced_Blizzard")
 	local WF = E:GetModule("Enhanced_WatchFrame")
+	local TAM = E:GetModule("Enhanced_TakeAllMail")
+	local CHAR = E:GetModule("Enhanced_CharacterFrame")
 
 	local choices = {
 		["NONE"] = L["NONE"],
@@ -175,6 +205,7 @@ local function BlizzardOptions()
 
 	return {
 		type = "group",
+		childGroups = "tree",
 		name = L["BlizzUI Improvements"],
 		get = function(info) return E.private.enhanced[info[#info]] end,
 		set = function(info, value)
@@ -183,38 +214,73 @@ local function BlizzardOptions()
 		end,
 		args = {
 			header = {
-				order = 0,
+				order = 1,
 				type = "header",
 				name = EE:ColorizeSettingName(L["BlizzUI Improvements"])
 			},
-			deathRecap = {
-				order = 1,
-				type = "toggle",
-				name = L["Death Recap Frame"]
-			},
-			animatedAchievementBars = {
+			general = {
 				order = 2,
-				type = "toggle",
-				name = L["Animated Achievement Bars"]
+				type = "group",
+				name = L["General"],
+				args = {
+					header = {
+						order = 1,
+						type = "header",
+						name = L["General"]
+					},
+					deathRecap = {
+						order = 2,
+						type = "toggle",
+						name = L["Death Recap Frame"]
+					},
+					takeAllMail = {
+						order = 3,
+						type = "toggle",
+						name = L["Take All Mail"],
+						get = function(info) return E.db.enhanced.blizzard.takeAllMail end,
+						set = function(info, value)
+							E.db.enhanced.blizzard.takeAllMail = value
+							if value and not TAM.initialized then
+								TAM:Initialize()
+							elseif not value then
+								E:StaticPopup_Show("CONFIG_RL")
+							end
+						end
+					},
+					animatedAchievementBars = {
+						order = 4,
+						type = "toggle",
+						name = L["Animated Achievement Bars"]
+					}
+				}
 			},
 			characterFrame = {
 				order = 3,
 				type = "group",
 				name = L["Character Frame"],
-				guiInline = true,
 				get = function(info) return E.private.enhanced.character[info[#info]] end,
 				set = function(info, value)
 					E.private.enhanced.character[info[#info]] = value
 					E:StaticPopup_Show("PRIVATE_RL")
 				end,
 				args = {
-					enable = {
+					header = {
 						order = 1,
+						type = "header",
+						name = L["Character Frame"]
+					},
+					enable = {
+						order = 2,
 						type = "toggle",
 						name = L["Enhanced Character Frame"]
 					},
+					modelFrames = {
+						order = 3,
+						type = "toggle",
+						name = L["Enhanced Model Frames"]
+					},
 					animations = {
-						order = 2,
+						order = 4,
 						type = "toggle",
 						name = L["Smooth Animations"],
 						get = function(info) return E.db.enhanced.character.animations end,
@@ -224,54 +290,108 @@ local function BlizzardOptions()
 						end,
 						disabled = function() return not E.private.enhanced.character.enable end
 					},
-					modelFrames = {
-						order = 3,
-						type = "toggle",
-						name = L["Enhanced Model Frames"]
-					},
 					paperdollBackgrounds = {
-						order = 4,
+						order = 5,
 						type = "group",
 						name = L["Paperdoll Backgrounds"],
 						guiInline = true,
 						get = function(info) return E.db.enhanced.character[info[#info]] end,
 						disabled = function() return not E.private.enhanced.character.enable end,
 						args = {
-							background = {
+							characterBackground = {
 								order = 1,
 								type = "toggle",
 								name = L["Character Background"],
 								set = function(info, value)
-									E.db.enhanced.character.background = value
-									E:GetModule("Enhanced_CharacterFrame"):UpdateCharacterModelFrame()
+									E.db.enhanced.character.characterBackground = value
+									CHAR:UpdateCharacterModelFrame()
 								end
 							},
-							petBackground = {
+							desaturateCharacter = {
 								order = 2,
+								type = "toggle",
+								name = L["Desaturate"],
+								get = function(info) return E.db.enhanced.character.desaturateCharacter end,
+								set = function(info, value)
+									E.db.enhanced.character.desaturateCharacter = value
+									CHAR:UpdateCharacterModelFrame()
+								end,
+								disabled = function() return not E.private.enhanced.character.enable or not E.db.enhanced.character.characterBackground end
+							},
+							spacer = {
+								order = 3,
+								type = "description",
+								name = " "
+							},
+							petBackground = {
+								order = 4,
 								type = "toggle",
 								name = L["Pet Background"],
 								set = function(info, value)
 									E.db.enhanced.character.petBackground = value
-									E:GetModule("Enhanced_CharacterFrame"):UpdatePetModelFrame()
+									CHAR:UpdatePetModelFrame()
 								end
 							},
+							desaturatePet = {
+								order = 5,
+								type = "toggle",
+								name = L["Desaturate"],
+								get = function(info) return E.db.enhanced.character.desaturatePet end,
+								set = function(info, value)
+									E.db.enhanced.character.desaturatePet = value
+									CHAR:UpdatePetModelFrame()
+								end,
+								disabled = function() return not E.private.enhanced.character.enable or not E.db.enhanced.character.petBackground end
+							},
+							spacer2 = {
+								order = 6,
+								type = "description",
+								name = " "
+							},
 							inspectBackground = {
-								order = 3,
+								order = 6,
 								type = "toggle",
 								name = L["Inspect Background"],
 								set = function(info, value)
 									E.db.enhanced.character.inspectBackground = value
-									E:GetModule("Enhanced_CharacterFrame"):UpdateInspectModelFrame()
+									CHAR:UpdateInspectModelFrame()
 								end
 							},
+							desaturateInspect = {
+								order = 8,
+								type = "toggle",
+								name = L["Desaturate"],
+								get = function(info) return E.db.enhanced.character.desaturateInspect end,
+								set = function(info, value)
+									E.db.enhanced.character.desaturateInspect = value
+									CHAR:UpdateInspectModelFrame()
+								end,
+								disabled = function() return not E.private.enhanced.character.enable or not E.db.enhanced.character.inspectBackground end
+							},
+							spacer3 = {
+								order = 9,
+								type = "description",
+								name = " "
+							},
 							companionBackground = {
-								order = 4,
+								order = 10,
 								type = "toggle",
 								name = L["Companion Background"],
 								set = function(info, value)
 									E.db.enhanced.character.companionBackground = value
-									E:GetModule("Enhanced_CharacterFrame"):UpdateCompanionModelFrame()
+									CHAR:UpdateCompanionModelFrame()
 								end
+							},
+							desaturateCompanion = {
+								order = 11,
+								type = "toggle",
+								name = L["Desaturate"],
+								get = function(info) return E.db.enhanced.character.desaturateCompanion end,
+								set = function(info, value)
+									E.db.enhanced.character.desaturateCompanion = value
+									CHAR:UpdateCompanionModelFrame()
+								end,
+								disabled = function() return not E.private.enhanced.character.enable or not E.db.enhanced.character.companionBackground end
 							}
 						}
 					}
@@ -281,17 +401,25 @@ local function BlizzardOptions()
 				order = 4,
 				type = "group",
 				name = L["Dressing Room"],
-				guiInline = true,
 				get = function(info) return E.db.enhanced.blizzard.dressUpFrame[info[#info]] end,
 				set = function(info, value)
 					E.db.enhanced.blizzard.dressUpFrame[info[#info]] = value
 					E:GetModule("Enhanced_Blizzard"):UpdateDressUpFrame()
 				end,
 				args = {
-					enable = {
+					header = {
 						order = 1,
+						type = "header",
+						name = L["Dressing Room"],
+					},
+					enable = {
+						order = 2,
 						type = "toggle",
-						name = L["Enable"]
+						name = L["Enable"],
+						set = function(info, value)
+							E.db.enhanced.blizzard.dressUpFrame[info[#info]] = value
+							E:StaticPopup_Show("PRIVATE_RL")
+						end,
 					},
 					multiplier = {
 						order = 3,
@@ -302,7 +430,7 @@ local function BlizzardOptions()
 						disabled = function() return not E.db.enhanced.blizzard.dressUpFrame.enable end
 					},
 					undressButton = {
-						order = 3,
+						order = 4,
 						type = "toggle",
 						name = L["Undress Button"],
 						desc = L["Add button to Dressing Room frame with ability to undress model."],
@@ -318,11 +446,15 @@ local function BlizzardOptions()
 				order = 5,
 				type = "group",
 				name = L["Timer Tracker"],
-				guiInline = true,
 				get = function(info) return E.db.enhanced.timerTracker[info[#info]] end,
 				args = {
-					enable = {
+					header = {
 						order = 1,
+						type = "header",
+						name = L["Timer Tracker"]
+					},
+					enable = {
+						order = 2,
 						type = "toggle",
 						name = L["Enable"],
 						set = function(info, value)
@@ -331,7 +463,7 @@ local function BlizzardOptions()
 						end
 					},
 					dbm = {
-						order = 2,
+						order = 3,
 						type = "toggle",
 						name = L["Hook DBM"],
 						set = function(info, value)
@@ -345,7 +477,6 @@ local function BlizzardOptions()
 			watchframe = {
 				order = 6,
 				type = "group",
-				guiInline = true,
 				name = L["Watch Frame"],
 				get = function(info) return E.db.enhanced.watchframe[info[#info]] end,
 				set = function(info, value)
@@ -353,18 +484,23 @@ local function BlizzardOptions()
 					WF:UpdateSettings()
 				end,
 				args = {
-					intro = {
+					header = {
 						order = 1,
+						type = "header",
+						name = L["Watch Frame"],
+					},
+					intro = {
+						order = 2,
 						type = "description",
 						name = L["WATCHFRAME_DESC"]
 					},
 					enable = {
-						order = 2,
+						order = 3,
 						type = "toggle",
 						name = L["Enable"]
 					},
 					settings = {
-						order = 3,
+						order = 4,
 						type = "group",
 						name = L["Visibility State"],
 						guiInline = true,
@@ -413,37 +549,41 @@ local function BlizzardOptions()
 				order = 7,
 				type = "group",
 				name = L["Error Frame"],
-				guiInline = true,
 				get = function(info) return E.db.enhanced.blizzard.errorFrame[info[#info]] end,
 				set = function(info, value)
 					E.db.enhanced.blizzard.errorFrame[info[#info]] = value
 					B:ErrorFrameSize()
 				end,
-				disabled = function() return not E.db.enhanced.blizzard.errorFrame.enable end,
 				args = {
-					enable = {
+					header = {
 						order = 1,
+						type = "header",
+						name = L["Error Frame"]
+					},
+					enable = {
+						order = 2,
 						type = "toggle",
 						name = L["Enable"],
 						set = function(info, value)
 							E.db.enhanced.blizzard.errorFrame[info[#info]] = value
 							B:CustomErrorFrameToggle()
-						end,
-						disabled = false
+						end
 					},
 					width = {
-						order = 2,
+						order = 3,
 						type = "range",
 						min = 100, max = 1000, step = 1,
 						name = L["Width"],
-						desc = L["Set the width of Error Frame. Too narrow frame may cause messages to be split in several lines"]
+						desc = L["Set the width of Error Frame. Too narrow frame may cause messages to be split in several lines"],
+						disabled = function() return not E.db.enhanced.blizzard.errorFrame.enable end
 					},
 					height = {
-						order = 3,
+						order = 4,
 						type = "range",
 						min = 30, max = 300, step = 1,
 						name = L["Height"],
-						desc = L["Set the height of Error Frame. Higher frame can show more lines at once."]
+						desc = L["Set the height of Error Frame. Higher frame can show more lines at once."],
+						disabled = function() return not E.db.enhanced.blizzard.errorFrame.enable end
 					},
 					spacer = {
 						order = 5,
@@ -455,13 +595,15 @@ local function BlizzardOptions()
 						type = "select",
 						dialogControl = "LSM30_Font",
 						name = L["Font"],
-						values = AceGUIWidgetLSMlists.font
+						values = AceGUIWidgetLSMlists.font,
+						disabled = function() return not E.db.enhanced.blizzard.errorFrame.enable end
 					},
 					fontSize = {
 						order = 7,
 						type = "range",
 						min = 6, max = 36, step = 1,
-						name = L["FONT_SIZE"]
+						name = L["FONT_SIZE"],
+						disabled = function() return not E.db.enhanced.blizzard.errorFrame.enable end
 					},
 					fontOutline = {
 						order = 8,
@@ -472,7 +614,8 @@ local function BlizzardOptions()
 							["OUTLINE"] = "OUTLINE",
 							["MONOCHROMEOUTLINE"] = "MONOCROMEOUTLINE",
 							["THICKOUTLINE"] = "THICKOUTLINE"
-						}
+						},
+						disabled = function() return not E.db.enhanced.blizzard.errorFrame.enable end
 					}
 				}
 			}
@@ -692,6 +835,56 @@ local function EquipmentInfoOptions()
 	}
 end
 
+local function MapOptions()
+	local MFC = E:GetModule("Enhanced_FogClear")
+
+	return {
+		type = "group",
+		name = L["Map"],
+		args = {
+			header = {
+				order = 0,
+				type = "header",
+				name = EE:ColorizeSettingName(L["Map"])
+			},
+			fogClear ={
+				type = "group",
+				name = L["Fog of War"],
+				guiInline = true,
+				args = {
+					enable = {
+						order = 1,
+						type = "toggle",
+						name = L["Enable"],
+						get = function(info) return E.db.enhanced.map.fogClear.enable end,
+						set = function(info, value)
+							E.db.enhanced.map.fogClear.enable = value
+							MFC:UpdateFog()
+						end
+					},
+					overlay = {
+						order = 2,
+						type = "color",
+						name = L["Overlay Color"],
+						hasAlpha = true,
+						get = function(info)
+							local t = E.db.enhanced.map.fogClear.color
+							local d = E.db.enhanced.map.fogClear.color
+							return t.r, t.g, t.b, t.a, d.r, d.g, d.b, d.a
+						end,
+						set = function(_, r, g, b, a)
+							local color = E.db.enhanced.map.fogClear.color
+							color.r, color.g, color.b, color.a = r, g, b, a
+							MFC:UpdateWorldMapOverlays()
+						end,
+						disabled = function() return not E.db.enhanced.map.fogClear.enable end
+					}
+				}
+			}
+		}
+	}
+end
+
 local function MinimapOptions()
 	E.Options.args.maps.args.minimap.args.locationTextGroup.args.locationText.values = {
 		["MOUSEOVER"] = L["Minimap Mouseover"],
@@ -699,6 +892,8 @@ local function MinimapOptions()
 		["ABOVE"] = EE:ColorizeSettingName(L["Above Minimap"]),
 		["HIDE"] = L["HIDE"]
 	}
+
+	local MBG = E:GetModule("Enhanced_MinimapButtonGrabber")
 
 	return {
 		type = "group",
@@ -760,6 +955,153 @@ local function MinimapOptions()
 						desc = L["The time to wait before fading the minimap back in after combat hide. (0 = Disabled)"],
 						min = 0, max = 20, step = 1,
 						disabled = function() return not E.db.enhanced.minimap.hideincombat end
+					}
+				}
+			},
+			minimapButtons = {
+				order = 5,
+				type = "group",
+				name = L["Minimap Button Grabber"],
+				guiInline = true,
+				get = function(info) return E.db.enhanced.minimap.buttonGrabber[info[#info]] end,
+				set = function(info, value)
+					E.db.enhanced.minimap.buttonGrabber[info[#info]] = value
+					MBG:UpdateLayout()
+				end,
+				disabled = function() return not E.private.enhanced.minimapButtonGrabber end,
+				args = {
+					enable = {
+						order = 1,
+						type = "toggle",
+						name = L["Enable"],
+						get = function(info) return E.private.enhanced.minimapButtonGrabber end,
+						set = function(info, value)
+							E.private.enhanced.minimapButtonGrabber = value
+							if value and not MBG.initialized then
+								MBG:Initialize()
+							elseif not value then
+								E:StaticPopup_Show("PRIVATE_RL")
+							end
+						end,
+						disabled = false
+					},
+					spacer = {
+						order = 2,
+						type = "description",
+						name = " ",
+						width = "full"
+					},
+					growFrom = {
+						order = 3,
+						type = "select",
+						name = L["Grow direction"],
+						values = {
+							["TOPLEFT"] = "DOWN -> RIGHT",
+							["TOPRIGHT"] = "DOWN -> LEFT",
+							["BOTTOMLEFT"] = "UP -> RIGHT",
+							["BOTTOMRIGHT"] = "UP -> LEFT"
+						}
+					},
+					buttonsPerRow = {
+						order = 4,
+						type = "range",
+						name = L["Buttons Per Row"],
+						desc = L["The amount of buttons to display per row."],
+						min = 1, max = 12, step = 1
+					},
+					buttonSize = {
+						order = 5,
+						type = "range",
+						name = L["Button Size"],
+						min = 2, max = 60, step = 1
+					},
+					buttonSpacing = {
+						order = 6,
+						type = "range",
+						name = L["Button Spacing"],
+						desc = L["The spacing between buttons."],
+						min = -1, max = 24, step = 1
+					},
+					backdrop = {
+						order = 7,
+						type = "toggle",
+						name = L["Backdrop"]
+					},
+					backdropSpacing = {
+						order = 8,
+						type = "range",
+						name = L["Backdrop Spacing"],
+						desc = L["The spacing between the backdrop and the buttons."],
+						min = -1, max = 15, step = 1,
+						disabled = function() return not E.private.enhanced.minimapButtonGrabber or not E.db.enhanced.minimap.buttonGrabber.backdrop end,
+					},
+					mouseover = {
+						order = 9,
+						type = "toggle",
+						name = L["Mouse Over"],
+						desc = L["The frame is not shown unless you mouse over the frame."],
+						set = function(info, value)
+							E.db.enhanced.minimap.buttonGrabber[info[#info]] = value
+							MBG:ToggleMouseover()
+						end
+					},
+					alpha = {
+						order = 10,
+						type = "range",
+						name = L["Alpha"],
+						min = 0, max = 1, step = 0.01,
+						set = function(info, value)
+							E.db.enhanced.minimap.buttonGrabber[info[#info]] = value
+							MBG:UpdateAlpha()
+						end
+					},
+					insideMinimapGroup = {
+						order = 11,
+						type = "group",
+						name = L["Inside Minimap"],
+						guiInline = true,
+						get = function(info) return E.db.enhanced.minimap.buttonGrabber.insideMinimap[info[#info]] end,
+						set = function(info, value)
+							E.db.enhanced.minimap.buttonGrabber.insideMinimap[info[#info]] = value
+							MBG:UpdatePosition()
+						end,
+						disabled = function() return not E.db.enhanced.minimap.buttonGrabber.insideMinimap.enable end,
+						args = {
+							enable = {
+								order = 1,
+								type = "toggle",
+								name = L["Enable"],
+								disabled = function() return not E.private.enhanced.minimapButtonGrabber end
+							},
+							position = {
+								order = 2,
+								type = "select",
+								name = L["Position"],
+								values = {
+									["TOPLEFT"] = "TOPLEFT",
+									["LEFT"] = "LEFT",
+									["BOTTOMLEFT"] = "BOTTOMLEFT",
+									["RIGHT"] = "RIGHT",
+									["TOPRIGHT"] = "TOPRIGHT",
+									["BOTTOMRIGHT"] = "BOTTOMRIGHT",
+									["CENTER"] = "CENTER",
+									["TOP"] = "TOP",
+									["BOTTOM"] = "BOTTOM"
+								}
+							},
+							xOffset = {
+								order = 3,
+								type = "range",
+								name = L["xOffset"],
+								min = -20, max = 20, step = 1
+							},
+							yOffset = {
+								order = 4,
+								type = "range",
+								name = L["yOffset"],
+								min = -20, max = 20, step = 1
+							}
+						}
 					}
 				}
 			}
@@ -976,8 +1318,14 @@ local function NamePlatesOptions()
 									["THICKOUTLINE"] = "THICKOUTLINE"
 								}
 							},
-							color = {
+							reactionColor = {
 								order = 4,
+								type = "toggle",
+								name = L["Reaction Color"],
+								desc = L["Color based on reaction type."]
+							},
+							color = {
+								order = 5,
 								type = "color",
 								name = L["COLOR"],
 								get = function(info)
@@ -989,7 +1337,8 @@ local function NamePlatesOptions()
 									local t = E.db.enhanced.nameplates.npc[info[#info]]
 									t.r, t.g, t.b = r, g, b
 									E:GetModule("NamePlates"):ConfigureAll()
-								end
+								end,
+								disabled = function() return E.db.enhanced.nameplates.npc.reactionColor end
 							},
 							separator = {
 								order = 5,
@@ -1116,13 +1465,19 @@ local function TooltipOptions()
 						end,
 						disabled = false
 					},
-					checkPlayer = {
+					checkAchievements = {
 						order = 2,
+						type = "toggle",
+						name = L["Check Achievements"],
+						desc = L["Check achievement completion instead of boss kill stats.\nSome servers log incorrect boss kill statistics, this is an alternative way to get player progress."]
+					},
+					checkPlayer = {
+						order = 3,
 						type = "toggle",
 						name = L["Check Player"]
 					},
 					modifier = {
-						order = 3,
+						order = 4,
 						type = "select",
 						name = L["Visibility"],
 						set = function(info, value)
@@ -1137,7 +1492,7 @@ local function TooltipOptions()
 						}
 					},
 					tiers = {
-						order = 4,
+						order = 5,
 						type = "group",
 						name = L["Tiers"],
 						get = function(info) return E.db.enhanced.tooltip.progressInfo.tiers[info[#info]] end,
@@ -1637,6 +1992,7 @@ function EE:GetOptions()
 			actionbarGroup = ActionbarOptions(),
 			blizzardGroup = BlizzardOptions(),
 			equipmentInfoGroup = EquipmentInfoOptions(),
+			mapGroup = MapOptions(),
 			minimapGroup = MinimapOptions(),
 			namePlatesGroup = NamePlatesOptions(),
 			tooltipGroup = TooltipOptions(),

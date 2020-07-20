@@ -22,7 +22,6 @@ local GetNumRaidMembers = GetNumRaidMembers
 local GetPartyMember = GetPartyMember
 local GetRaidRosterInfo = GetRaidRosterInfo
 local GetRepairAllCost = GetRepairAllCost
-local GetUnitSpeed = GetUnitSpeed
 local GuildRoster = GuildRoster
 local HideRepairCursor = HideRepairCursor
 local InCombatLockdown = InCombatLockdown
@@ -127,7 +126,7 @@ do
 		for _, slotID in ipairs(repairInventoryPriority) do
 			local hasItem, _, repairCost = GameTooltip:SetInventoryItem("player", slotID)
 
-			if hasItem and repairCost > 0 and repairCost <= money then
+			if hasItem and repairCost and repairCost > 0 and repairCost <= money then
 				PickupInventoryItem(slotID)
 				money = money - repairCost
 			end
@@ -185,7 +184,7 @@ do
 
 				self:RegisterEvent("MERCHANT_CLOSED")
 				E.RegisterCallback(M, "VendorGreys_ItemSold")
-			else
+			elseif playerMoney > 0 then
 				local spent = RepairInventoryByPriority(playerMoney)
 
 				if spent > 0 then
@@ -194,6 +193,8 @@ do
 				else
 					E:Print(L["You don't have enough money to repair."])
 				end
+			else
+				E:Print(L["You don't have enough money to repair."])
 			end
 		end
 	end
@@ -245,7 +246,7 @@ function M:MERCHANT_SHOW()
 
 	local repairMode = E.db.general.autoRepair
 	if repairMode ~= "NONE" then
-		self:AutoRepair(repairMode, greyValue)
+		E:Delay(0.03, self.AutoRepair, self, repairMode, greyValue)
 	end
 end
 
@@ -270,31 +271,6 @@ function M:DisbandRaidGroup()
 	end
 
 	LeaveParty()
-end
-
-do
-	function M:CheckMovement()
-		if not WorldMapFrame:IsShown() then return end
-
-		if GetUnitSpeed("player") ~= 0 and not WorldMapPositioningGuide:IsMouseOver() then
-			WorldMapFrame:SetAlpha(E.global.general.mapAlphaWhenMoving)
-			WorldMapBlobFrame:SetFillAlpha(128 * E.global.general.mapAlphaWhenMoving)
-			WorldMapBlobFrame:SetBorderAlpha(192 * E.global.general.mapAlphaWhenMoving)
-		else
-			WorldMapFrame:SetAlpha(1)
-			WorldMapBlobFrame:SetFillAlpha(128)
-			WorldMapBlobFrame:SetBorderAlpha(192)
-		end
-	end
-
-	function M:ToggleMapAlpha()
-		if self.MovingTimer and E.global.general.mapAlphaWhenMoving >= 1 then
-			self:CancelTimer(self.MovingTimer)
-			self.MovingTimer = nil
-		elseif not self.MovingTimer and E.global.general.mapAlphaWhenMoving < 1 then
-			self.MovingTimer = self:ScheduleRepeatingTimer("CheckMovement", 0.2)
-		end
-	end
 end
 
 function M:PVPMessageEnhancement(_, msg)
@@ -357,7 +333,6 @@ function M:Initialize()
 
 	self:ToggleErrorHandling()
 	self:ToggleInterruptAnnounce()
-	self:ToggleMapAlpha()
 
 	self:RegisterEvent("CHAT_MSG_BG_SYSTEM_HORDE", "PVPMessageEnhancement")
 	self:RegisterEvent("CHAT_MSG_BG_SYSTEM_ALLIANCE", "PVPMessageEnhancement")

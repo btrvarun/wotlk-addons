@@ -81,4 +81,15 @@
 	<Script file="beanCounter.lua"/>
 	<Script file="informant.lua"/>
 	<Script file="auctioneerSuite.lua"/>
+	<Script file="altoholic.lua"/>
+	<Script file="loseControl.lua"/>
+	<Script file="silverDragon.lua"/>
+	<Script file="_NPCScanOverlay.lua"/>
+	<Script file="Examiner.lua"/>
+	<Script file="Mapster.lua"/>
+	<Script file="ArkInventory.lua"/>
+	<Script file="QuestGuru.lua"/>
+	<Script file="QuestGuruTracker.lua"/>
+	<Script file="SatrinaBuffFrame.lua"/>
+	<Script file="LootCouncil_Lite.lua"/>
 </Ui>

@@ -7,35 +7,36 @@ local type = type
 local unpack = unpack
 --WoW API / Variables
 
-local function LoadSkin()
+S:AddCallback("Skin_Misc", function()
 	if not E.private.skins.blizzard.enable or not E.private.skins.blizzard.misc then return end
 
 	-- ESC/Menu Buttons
 	GameMenuFrame:StripTextures()
 	GameMenuFrame:CreateBackdrop("Transparent")
 
-	GameMenuFrameHeader:ClearAllPoints()
-	GameMenuFrameHeader:Point("TOP", GameMenuFrame, 0, 7)
+	GameMenuFrameHeader:Point("TOP", 0, 7)
 
 	local menuButtons = {
-		"GameMenuButtonOptions",
-		"GameMenuButtonUIOptions",
-		"GameMenuButtonKeybindings",
-		"GameMenuButtonMacros",
-		"GameMenuButtonSoundOptions",
-		"GameMenuButtonLogout",
-		"GameMenuButtonQuit",
-		"GameMenuButtonContinue",
+		GameMenuButtonOptions,
+		GameMenuButtonSoundOptions,
+		GameMenuButtonUIOptions,
+	--	GameMenuButtonMacOptions,
+		GameMenuButtonKeybindings,
+		GameMenuButtonMacros,
+	--	GameMenuButtonRatings,
+		GameMenuButtonLogout,
+		GameMenuButtonQuit,
+		GameMenuButtonContinue,
+
+		ElvUI_MenuButton
 	}
 
 	for i = 1, #menuButtons do
-		local button = _G[menuButtons[i]]
+		local button = menuButtons[i]
 		if button then
-			S:HandleButton(button)
+			S:HandleButton(menuButtons[i])
 		end
 	end
-
-	S:HandleButton(ElvUI_MenuButton)
 
 	-- Static Popups
 	for i = 1, 4 do
@@ -68,7 +69,7 @@ local function LoadSkin()
 		end
 
 		closeButton:StripTextures()
-		S:HandleCloseButton(closeButton)
+		S:HandleCloseButton(closeButton, staticPopup)
 
 		itemFrame:GetNormalTexture():Kill()
 		itemFrame:SetTemplate()
@@ -115,9 +116,10 @@ local function LoadSkin()
 	BNToastFrameCloseButton:Size(32)
 	BNToastFrameCloseButton:Point("TOPRIGHT", "BNToastFrame", 4, 4)
 
-	S:HandleCloseButton(BNToastFrameCloseButton)
+	S:HandleCloseButton(BNToastFrameCloseButton, BNToastFrame)
 
 	-- Ready Check Frame
+	ReadyCheckFrame:EnableMouse(true)
 	ReadyCheckFrame:SetTemplate("Transparent")
 
 	S:HandleButton(ReadyCheckFrameYesButton)
@@ -128,11 +130,10 @@ local function LoadSkin()
 	S:HandleButton(ReadyCheckFrameNoButton)
 	ReadyCheckFrameNoButton:SetParent(ReadyCheckFrame)
 	ReadyCheckFrameNoButton:ClearAllPoints()
-	ReadyCheckFrameNoButton:Point("TOPLEFT", ReadyCheckFrame, "CENTER", 3, -5)
+	ReadyCheckFrameNoButton:Point("TOPLEFT", ReadyCheckFrame, "CENTER", 4, -5)
 
 	ReadyCheckFrameText:SetParent(ReadyCheckFrame)
-	ReadyCheckFrameText:ClearAllPoints()
-	ReadyCheckFrameText:SetPoint("TOP", 0, -15)
+	ReadyCheckFrameText:Point("TOP", 0, -15)
 	ReadyCheckFrameText:SetTextColor(1, 1, 1)
 
 	ReadyCheckListenerFrame:SetAlpha(0)
@@ -154,10 +155,10 @@ local function LoadSkin()
 	StackSplitFrame:SetFrameStrata("DIALOG")
 
 	StackSplitFrame.bg1 = CreateFrame("Frame", nil, StackSplitFrame)
+	StackSplitFrame.bg1:SetFrameLevel(StackSplitFrame.bg1:GetFrameLevel() - 1)
 	StackSplitFrame.bg1:SetTemplate("Transparent")
 	StackSplitFrame.bg1:Point("TOPLEFT", 10, -15)
 	StackSplitFrame.bg1:Point("BOTTOMRIGHT", -10, 55)
-	StackSplitFrame.bg1:SetFrameLevel(StackSplitFrame.bg1:GetFrameLevel() - 1)
 
 	S:HandleButton(StackSplitOkayButton)
 	S:HandleButton(StackSplitCancelButton)
@@ -177,12 +178,21 @@ local function LoadSkin()
 	ChannelPulloutTab:Size(107, 26)
 	ChannelPulloutTabText:Point("LEFT", ChannelPulloutTabLeft, "RIGHT", 0, 4)
 
-	S:HandleCloseButton(ChannelPulloutCloseButton)
+	S:HandleCloseButton(ChannelPulloutCloseButton, ChannelPullout)
 	ChannelPulloutCloseButton:Size(32)
 
 	-- Dropdown Menu
+	local checkBoxSkin = E.private.skins.dropdownCheckBoxSkin
 	local menuLevel = 0
 	local maxButtons = 0
+
+	local function dropDownButtonShow(self)
+		if self.notCheckable then
+			self.check.backdrop:Hide()
+		else
+			self.check.backdrop:Show()
+		end
+	end
 
 	local function skinDropdownMenu()
 		local updateButtons = maxButtons < UIDROPDOWNMENU_MAXBUTTONS
@@ -195,20 +205,33 @@ local function LoadSkin()
 					_G["DropDownList"..i.."Backdrop"]:SetTemplate("Transparent")
 					_G["DropDownList"..i.."MenuBackdrop"]:SetTemplate("Transparent")
 
-					if updateButtons then
-						for j = 1, UIDROPDOWNMENU_MAXBUTTONS do
-							local button = _G["DropDownList"..i.."Button"..j]
+					frame.isSkinned = true
+				end
 
-							if not button.isSkinned then
-								_G["DropDownList"..i.."Button"..j.."Highlight"]:SetTexture(1, 1, 1, 0.3)
-								S:HandleColorSwatch(_G["DropDownList"..i.."Button"..j.."ColorSwatch"], 14)
+				if updateButtons then
+					for j = 1, UIDROPDOWNMENU_MAXBUTTONS do
+						local button = _G["DropDownList"..i.."Button"..j]
 
-								button.isSkinned = true
+						if not button.isSkinned then
+							S:HandleButtonHighlight(_G["DropDownList"..i.."Button"..j.."Highlight"])
+
+							if checkBoxSkin then
+								local check = _G["DropDownList"..i.."Button"..j.."Check"]
+								check:Size(12)
+								check:Point("LEFT", 1, 0)
+								check:CreateBackdrop()
+								check:SetTexture(E.media.normTex)
+								check:SetVertexColor(1, 0.82, 0, 0.8)
+
+								button.check = check
+								hooksecurefunc(button, "Show", dropDownButtonShow)
 							end
+
+							S:HandleColorSwatch(_G["DropDownList"..i.."Button"..j.."ColorSwatch"], 14)
+
+							button.isSkinned = true
 						end
 					end
-
-					frame.isSkinned = true
 				end
 			end
 
@@ -275,6 +298,4 @@ local function LoadSkin()
 			end
 		end
 	end
-end
-
-S:AddCallback("Skin_Misc", LoadSkin)
+end)

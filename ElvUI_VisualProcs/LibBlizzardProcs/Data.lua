@@ -159,6 +159,11 @@ LBP_Data.ButtonSpells = {
 		[49045] = 3,
 		[51742] = 3,
 		[53214] = 3,
+
+		-- Kill Shot
+		[53351] = 4,
+		[61005] = 4,
+		[61006] = 4,
 	},
 	MAGE = {
 		-- Missile Barrage
@@ -342,7 +347,7 @@ LBP_Data.ButtonSpells = {
 		[75412] = 6,
 		[75419] = 6,
 
-		-- Impact / Fingers of Frost 
+		-- Impact / Fingers of Frost
 		[13339] = 7,
 		[13340] = 7,
 		[13341] = 7,
@@ -641,6 +646,8 @@ LBP_Data.ButtonProcs = {
 		{56453},
 		-- Improved Steady Shot / Lock and Load
 		{53220, 56453},
+		-- Kill Shot
+		{61006},
 	},
 	MAGE = {
 		-- Missile Barrage
@@ -655,7 +662,7 @@ LBP_Data.ButtonProcs = {
 		{64343},
 		-- Fingers of Frost
 		{74396},
-		-- Impact / Fingers of Frost 
+		-- Impact / Fingers of Frost
 		{64343, 74396},
 	},
 	PALADIN = {
@@ -691,8 +698,8 @@ LBP_Data.ButtonProcs = {
 	WARRIOR = {
 		-- Revenge
 		{6572},
-		-- Overpower
-		{7384},
+		-- Overpower / Taste for Blood
+		{7384, 60503},
 		-- Victory Rush
 		{34428},
 		-- Slam!
@@ -730,6 +737,8 @@ LBP_Data.OverlayProcs = {
 		[53220] = 1,
 		-- Lock and Load
 		[56453] = 2,
+		-- Kill Shot
+		[61006] = nil,
 	},
 	MAGE = {
 		-- Hot Streak

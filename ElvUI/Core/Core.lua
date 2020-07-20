@@ -105,6 +105,7 @@ E.HealingClasses = {
 
 E.ClassRole = {
 	PALADIN = {
+		[0] = "Melee",
 		[1] = "Caster",
 		[2] = "Tank",
 		[3] = "Melee"
@@ -112,12 +113,14 @@ E.ClassRole = {
 	PRIEST = "Caster",
 	WARLOCK = "Caster",
 	WARRIOR = {
+		[0] = "Melee",
 		[1] = "Melee",
 		[2] = "Melee",
 		[3] = "Tank"
 	},
 	HUNTER = "Melee",
 	SHAMAN = {
+		[0] = "Caster",
 		[1] = "Caster",
 		[2] = "Melee",
 		[3] = "Caster"
@@ -125,11 +128,13 @@ E.ClassRole = {
 	ROGUE = "Melee",
 	MAGE = "Caster",
 	DEATHKNIGHT = {
+		[0] = "Melee",
 		[1] = "Tank",
 		[2] = "Melee",
 		[3] = "Melee"
 	},
 	DRUID = {
+		[0] = "Caster",
 		[1] = "Caster",
 		[2] = "Melee",
 		[3] = "Caster"
@@ -900,6 +905,7 @@ function E:UpdateAll(ignoreInstall)
 
 	if E.private.general.minimap.enable then
 		Minimap:UpdateSettings()
+		ReminderBuffs:UpdateSettings()
 	end
 
 	if E.private.nameplates.enable then
@@ -914,8 +920,6 @@ function E:UpdateAll(ignoreInstall)
 		Totems:ToggleEnable()
 		Totems:PositionAndSize()
 	end
-
-	ReminderBuffs:UpdateSettings()
 
 	if E.private.unitframe.enable then
 		UnitFrames:Update_AllFrames()
@@ -1222,6 +1226,10 @@ function E:DBConversions()
 
 	if sub(E.db.chat.timeStampFormat, -1) == " " then
 		E.db.chat.timeStampFormat = sub(E.db.chat.timeStampFormat, 1, -2)
+	end
+
+	if E.private.skins.blizzard.greeting ~= nil then
+		E.private.skins.blizzard.greeting = nil
 	end
 end
 

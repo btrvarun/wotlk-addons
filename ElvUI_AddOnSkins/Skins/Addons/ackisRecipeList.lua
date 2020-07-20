@@ -4,10 +4,12 @@ local S = E:GetModule("Skins")
 local ipairs = ipairs
 local select = select
 local unpack = unpack
+local find = string.find
 
 local hooksecurefunc = hooksecurefunc
 
 -- AckisRecipeList 2.01.14
+-- https://www.curseforge.com/wow/addons/arl/files/458020
 
 local function LoadSkin()
 	if not E.private.addOnSkins.AckisRecipeList then return end
@@ -16,8 +18,7 @@ local function LoadSkin()
 	if not addon then return end
 
 	local function HandleScrollBar(frame)
-		local UpButton = select(1, frame:GetChildren())
-		local DownButton = select(2, frame:GetChildren())
+		local UpButton, DownButton = frame:GetChildren()
 
 		S:HandleNextPrevButton(UpButton, "up")
 		UpButton:Size(20, 18)
@@ -55,14 +56,14 @@ local function LoadSkin()
 	end
 
 	local function ExpansionButton(button)
-		select(1, button:GetRegions()):SetDesaturated(true)
+		button:GetRegions():SetDesaturated(true)
 
 		button:GetPushedTexture():SetTexture(nil)
 		button:GetHighlightTexture():SetTexture(nil)
 		button:GetCheckedTexture():SetTexture(nil)
 
 		hooksecurefunc(button, "SetChecked", function(self, state)
-			select(1, self:GetRegions()):SetDesaturated(state)
+			self:GetRegions():SetDesaturated(state)
 		end)
 	end
 
@@ -182,7 +183,7 @@ local function LoadSkin()
 			c.Text:SetText("+")
 
 			hooksecurefunc(c, "SetNormalTexture", function(self, texture)
-				if(string.find(texture, "MinusButton")) then
+				if find(texture, "MinusButton") then
 					self.Text:SetText("-")
 				else
 					self.Text:SetText("+")
@@ -269,8 +270,8 @@ local function LoadSkin()
 		end)
 
 		ARL_MainPanel.filter_toggle:HookScript("OnClick", function(self)
-			if self.isSkinned then return end
-			self.isSkinned = true
+			if self.isFrameSkinned then return end
+			self.isFrameSkinned = true
 
 			ARL_MainPanel.filter_menu:Point("TOPRIGHT", ARL_MainPanel, "TOPRIGHT", -115, -75)
 

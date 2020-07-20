@@ -19,12 +19,10 @@ local function OnEvent(self)
 
 	if E.Role == "Caster" then
 		hitRatingBonus = GetCombatRatingBonus(CR_HIT_SPELL)
+	elseif E.myclass == "HUNTER" then
+		hitRatingBonus = GetCombatRatingBonus(CR_HIT_RANGED)
 	else
-		if E.myclass == "HUNTER" then
-			hitRatingBonus = GetCombatRatingBonus(CR_HIT_RANGED)
-		else
-			hitRatingBonus = GetCombatRatingBonus(CR_HIT_MELEE)
-		end
+		hitRatingBonus = GetCombatRatingBonus(CR_HIT_MELEE)
 	end
 
 	self.text:SetFormattedText(displayString, hitRatingBonus)
@@ -39,4 +37,4 @@ local function ValueColorUpdate(hex)
 end
 E.valueColorUpdateFuncs[ValueColorUpdate] = true
 
-DT:RegisterDatatext("Hit", {"COMBAT_RATING_UPDATE"}, OnEvent, nil, nil, nil, nil, STAT_HIT_CHANCE)
+DT:RegisterDatatext("Hit", {"ACTIVE_TALENT_GROUP_CHANGED", "PLAYER_TALENT_UPDATE", "COMBAT_RATING_UPDATE"}, OnEvent, nil, nil, nil, nil, STAT_HIT_CHANCE)

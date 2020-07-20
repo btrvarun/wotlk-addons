@@ -178,6 +178,8 @@ do
 			i = i + 1
 			srcGUID = nil
 		end
+
+		lib.callbacks:Fire("LibAuraInfo_UNIT_AURA", dstGUID)
 	end
 end
 
@@ -213,6 +215,7 @@ do
 end
 
 function lib.frame:UNIT_AURA(_, unitID)
+	if not unitID then return end
 	ResetUnitAuras(unitID)
 	CheckUnitAuras(unitID, "HELPFUL")
 	CheckUnitAuras(unitID, "HARMFUL")

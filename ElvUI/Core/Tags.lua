@@ -575,6 +575,24 @@ ElvUF.Tags.Methods["class"] = function(unit)
 	return UnitClass(unit)
 end
 
+ElvUF.Tags.Events["specialization"] = "UNIT_NAME_UPDATE ACTIVE_TALENT_GROUP_CHANGED PLAYER_TALENT_UPDATE INSPECT_TALENT_READY UNIT_PORTRAIT_UPDATE"
+ElvUF.Tags.Methods["specialization"] = function(unit)
+	if (UnitIsPlayer(unit)) then
+		local _, specName
+		local GUID = UnitGUID(unit)
+
+		if GUID == E.myguid then
+			_, specName = E:GetTalentSpecInfo()
+		else
+			if CanInspect(unit) then
+				_, specName = E:GetTalentSpecInfo(true)
+			end
+		end
+
+		return specName
+	end
+end
+
 ElvUF.Tags.Events["name:title"] = "UNIT_NAME_UPDATE"
 ElvUF.Tags.Methods["name:title"] = function(unit)
 	if UnitIsPlayer(unit) then
@@ -700,20 +718,21 @@ E.TagInfo = {
 	["threat"] = {category = "Threat", description = "Displays the current threat"},
 	["threat:percent"] = {category = "Threat", description = "Displays the current threat as a percent"},
 	["threat:current"] = {category = "Threat", description = "Displays the current threat as a value"},
-	--Miscellanous
-	["smartclass"] = {category = "Miscellanous", description = "Displays the player's class or creature's type"},
-	["class"] = {category = "Miscellanous", description = "Displays the class of the unit, if that unit is a player"},
-	["difficulty"] = {category = "Miscellanous", description = "Changes color of the next tag based on how difficult the unit is compared to the players level"},
-	["faction"] = {category = "Miscellanous", description = "Displays 'Aliance' or 'Horde'"},
-	["plus"] = {category = "Miscellanous", description = "Displays the character '+' if the unit is an elite or rare-elite"},
-	["arena:number"] = {category = "Miscellanous", description = "Displays the arena number 1-5"},
+	--Miscellaneous
+	["smartclass"] = {category = "Miscellaneous", description = "Displays the player's class or creature's type"},
+	["specialization"] = {category = "Miscellaneous", description = "Displays your current specialization as text"},
+	["class"] = {category = "Miscellaneous", description = "Displays the class of the unit, if that unit is a player"},
+	["difficulty"] = {category = "Miscellaneous", description = "Changes color of the next tag based on how difficult the unit is compared to the players level"},
+	["faction"] = {category = "Miscellaneous", description = "Displays 'Aliance' or 'Horde'"},
+	["plus"] = {category = "Miscellaneous", description = "Displays the character '+' if the unit is an elite or rare-elite"},
+	["arena:number"] = {category = "Miscellaneous", description = "Displays the arena number 1-5"},
 }
 
 function E:AddTagInfo(tagName, category, description, order)
 	if order then order = tonumber(order) + 10 end
 
 	E.TagInfo[tagName] = E.TagInfo[tagName] or {}
-	E.TagInfo[tagName].category = category or "Miscellanous"
+	E.TagInfo[tagName].category = category or "Miscellaneous"
 	E.TagInfo[tagName].description = description or ""
 	E.TagInfo[tagName].order = order or nil
 end

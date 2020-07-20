@@ -4,7 +4,7 @@ local S = E:GetModule("Skins")
 --Lua functions
 --WoW API / Variables
 
-local function LoadSkin()
+S:AddCallback("Skin_Arena", function()
 	if not E.private.skins.blizzard.enable or not E.private.skins.blizzard.arena then return end
 
 	ArenaFrame:StripTextures()
@@ -14,16 +14,27 @@ local function LoadSkin()
 	ArenaFrame.backdrop:Point("BOTTOMRIGHT", -32, 76)
 
 	S:SetUIPanelWindowInfo(ArenaFrame, "width")
-
-	ArenaFrameNameHeader:SetPoint("TOPLEFT", 28, -55)
-	ArenaFrameZoneDescription:SetTextColor(1, 1, 1)
-
-	S:HandleButton(ArenaFrameCancelButton)
-	S:HandleButton(ArenaFrameJoinButton)
-	S:HandleButton(ArenaFrameGroupJoinButton)
-	ArenaFrameGroupJoinButton:SetPoint("RIGHT", ArenaFrameJoinButton, "LEFT", -2, 0)
+	S:SetBackdropHitRect(ArenaFrame)
 
 	S:HandleCloseButton(ArenaFrameCloseButton, ArenaFrame.backdrop)
-end
 
-S:AddCallback("Skin_Arena", LoadSkin)
+	S:HandleButton(ArenaFrameGroupJoinButton)
+	S:HandleButton(ArenaFrameJoinButton)
+	S:HandleButton(ArenaFrameCancelButton)
+
+	for i = 1, MAX_ARENA_BATTLES do
+		S:HandleButtonHighlight(_G["ArenaZone"..i])
+	end
+
+	ArenaFrameZoneDescription:SetTextColor(1, 1, 1)
+
+	ArenaFrameNameHeader:Point("TOPLEFT", 28, -55)
+
+	ArenaZone1:Point("TOPLEFT", 24, -79)
+
+	ArenaFrameGroupJoinButton:Width(127)
+
+	ArenaFrameCancelButton:Point("CENTER", ArenaFrame, "TOPLEFT", 302, -417)
+	ArenaFrameJoinButton:Point("RIGHT", ArenaFrameCancelButton, "LEFT", -3, 0)
+	ArenaFrameGroupJoinButton:Point("RIGHT", ArenaFrameJoinButton, "LEFT", -3, 0)
+end)

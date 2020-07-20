@@ -9,7 +9,7 @@ local unpack = unpack
 --local BOOKTYPE_SPELL = BOOKTYPE_SPELL
 local MAX_SKILLLINE_TABS = MAX_SKILLLINE_TABS
 
-local function LoadSkin()
+S:AddCallback("Skin_Spellbook", function()
 	if not E.private.skins.blizzard.enable or not E.private.skins.blizzard.spellbook then return end
 
 	SpellBookFrame:StripTextures(true)
@@ -18,6 +18,7 @@ local function LoadSkin()
 	SpellBookFrame.backdrop:Point("BOTTOMRIGHT", -32, 76)
 
 	S:SetUIPanelWindowInfo(SpellBookFrame, "width", nil, 32)
+	S:SetBackdropHitRect(SpellBookFrame)
 
 --[[
 	SpellBookFrame:EnableMouseWheel(true)
@@ -43,15 +44,16 @@ local function LoadSkin()
 
 	for i = 1, 3 do
 		local tab = _G["SpellBookFrameTabButton"..i]
-
+		tab:Size(122, 32)
 		tab:GetNormalTexture():SetTexture(nil)
 		tab:GetDisabledTexture():SetTexture(nil)
-
+		tab:GetRegions():SetPoint("CENTER", 0, 2)
 		S:HandleTab(tab)
-
-		tab.backdrop:Point("TOPLEFT", 14, E.PixelMode and -16 or -18)
-		tab.backdrop:Point("BOTTOMRIGHT", -14, 19)
 	end
+
+	SpellBookFrameTabButton1:Point("CENTER", SpellBookFrame, "BOTTOMLEFT", 72, 62)
+	SpellBookFrameTabButton2:Point("LEFT", SpellBookFrameTabButton1, "RIGHT", -15, 0)
+	SpellBookFrameTabButton3:Point("LEFT", SpellBookFrameTabButton2, "RIGHT", -15, 0)
 
 	S:HandleNextPrevButton(SpellBookPrevPageButton, nil, nil, true)
 	S:HandleNextPrevButton(SpellBookNextPageButton, nil, nil, true)
@@ -93,7 +95,7 @@ local function LoadSkin()
 		tab:GetNormalTexture():SetTexCoord(unpack(E.TexCoords))
 	end
 
-	SpellBookPageText:SetTextColor(1, 1, 1)
-end
+	SpellBookSkillLineTab1:Point("TOPLEFT", SpellBookFrame, "TOPRIGHT", -33, -65)
 
-S:AddCallback("Skin_Spellbook", LoadSkin)
+	SpellBookPageText:SetTextColor(1, 1, 1)
+end)

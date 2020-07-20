@@ -112,6 +112,14 @@ do
 	end
 end
 
+do
+	DisableAddOn("ElvUI_EverySecondCounts")
+	DisableAddOn("ElvUI_FogOfWar")
+	DisableAddOn("ElvUI_VisualAuraTimers")
+	DisableAddOn("ElvUI_MinimapButtons")
+	DisableAddOn("ElvUI_ChannelAlerts")
+end
+
 function AddOn:OnInitialize()
 	if not ElvCharacterDB then
 		ElvCharacterDB = {}

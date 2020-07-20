@@ -4,10 +4,8 @@ local S = E:GetModule("Skins")
 --Lua functions
 --WoW API / Variables
 
-local function LoadSkin()
+S:AddCallback("Skin_Tabard", function()
 	if not E.private.skins.blizzard.enable or not E.private.skins.blizzard.tabard then return end
-
-	TabardFramePortrait:Kill()
 
 	TabardFrame:StripTextures()
 	TabardFrame:CreateBackdrop("Transparent")
@@ -15,49 +13,47 @@ local function LoadSkin()
 	TabardFrame.backdrop:Point("BOTTOMRIGHT", -32, 76)
 
 	S:SetUIPanelWindowInfo(TabardFrame, "width")
+	S:SetBackdropHitRect(TabardFrame)
 
-	TabardModel:CreateBackdrop("Default")
+	S:HandleCloseButton(TabardFrameCloseButton, TabardFrame.backdrop)
+
+	TabardFramePortrait:Kill()
+
+	TabardModel:CreateBackdrop("Transparent")
+	TabardModel.backdrop:Point("TOPLEFT", -2, 5)
+	TabardModel.backdrop:Point("BOTTOMRIGHT", 20, -1)
+
+	S:HandleRotateButton(TabardCharacterModelRotateLeftButton)
+	S:HandleRotateButton(TabardCharacterModelRotateRightButton)
 
 	S:HandleButton(TabardFrameCancelButton)
 	S:HandleButton(TabardFrameAcceptButton)
-	S:HandleCloseButton(TabardFrameCloseButton, TabardFrame.backdrop)
-	S:HandleRotateButton(TabardCharacterModelRotateLeftButton)
-	S:HandleRotateButton(TabardCharacterModelRotateRightButton)
 
 	TabardFrameCostFrame:StripTextures()
 	TabardFrameCustomizationFrame:StripTextures()
 
 	for i = 1, 5 do
-		local custom = _G["TabardFrameCustomization"..i]
-		custom:StripTextures()
+		_G["TabardFrameCustomization"..i]:StripTextures()
 		S:HandleNextPrevButton(_G["TabardFrameCustomization"..i.."LeftButton"])
 		S:HandleNextPrevButton(_G["TabardFrameCustomization"..i.."RightButton"])
-
-		if i > 1 then
-			custom:ClearAllPoints()
-			custom:Point("TOP", _G["TabardFrameCustomization"..i - 1], "BOTTOM", 0, -6)
-		else
-			local point, anchor, point2, x, y = custom:GetPoint()
-			custom:Point(point, anchor, point2, x, y + 4)
-		end
 	end
 
-	TabardCharacterModelRotateLeftButton:Point("BOTTOMLEFT", 4, 4)
-	TabardCharacterModelRotateRightButton:Point("TOPLEFT", TabardCharacterModelRotateLeftButton, "TOPRIGHT", 4, 0)
+	TabardModel:Point("BOTTOM", -20, 114)
 
-	hooksecurefunc(TabardCharacterModelRotateLeftButton, "SetPoint", function(self)
-		if self._blocked then return end
-		self._blocked = true
-		self:Point("BOTTOMLEFT", 4, 4)
-		self._blocked = nil
-	end)
+	TabardCharacterModelRotateLeftButton:Point("BOTTOMLEFT", 2, 3)
+	TabardCharacterModelRotateRightButton:Point("TOPLEFT", TabardCharacterModelRotateLeftButton, "TOPRIGHT", 3, 0)
 
-	hooksecurefunc(TabardCharacterModelRotateRightButton, "SetPoint", function(self)
-		if self._blocked then return end
-		self._blocked = true
-		self:Point("TOPLEFT", TabardCharacterModelRotateLeftButton, "TOPRIGHT", 4, 0)
-		self._blocked = nil
-	end)
-end
+--	TabardCharacterModelRotateLeftButton.SetPoint = E.noop
+--	TabardCharacterModelRotateRightButton.SetPoint = E.noop
 
-S:AddCallback("Skin_Tabard", LoadSkin)
+	TabardFrameEmblemTopRight:Point("TOPRIGHT", TabardFrameOuterFrameTopRight, "TOPRIGHT", 24, 6)
+
+	TabardFrameCustomization1:Point("TOPLEFT", TabardFrameCustomizationBorder, "TOPLEFT", 63, -63)
+
+	TabardFrameMoneyFrame:Point("BOTTOMRIGHT", TabardFrame, "BOTTOMLEFT", 183, 88)
+
+	TabardFrameCancelButton:Point("CENTER", TabardFrame, "TOPLEFT", 304, -417)
+	TabardFrameAcceptButton:Point("CENTER", TabardFrame, "TOPLEFT", 221, -417)
+
+	TabardModel:SetModelScale(1.25)
+end)

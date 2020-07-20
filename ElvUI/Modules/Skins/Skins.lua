@@ -4,18 +4,18 @@ local S = E:GetModule("Skins")
 --Lua functions
 local _G = _G
 local unpack, pairs, ipairs, select, type = unpack, pairs, ipairs, select, type
-local strfind, format, lower = strfind, string.format, string.lower
-local twipe = table.wipe
+local floor = math.floor
+local find, format, lower = string.find, string.format, string.lower
 --WoW API / Variables
-local InCombatLockdown = InCombatLockdown
 local IsAddOnLoaded = IsAddOnLoaded
+local UIPanelWindows = UIPanelWindows
+local UpdateUIPanelPositions = UpdateUIPanelPositions
 local hooksecurefunc = hooksecurefunc
 
 S.allowBypass = {}
 S.addonCallbacks = {}
 S.nonAddonCallbacks = {["CallPriority"] = {}}
 
--- Depends on the arrow texture to be up by default.
 S.ArrowRotation = {
 	["up"] = 0,
 	["down"] = 3.14,
@@ -79,31 +79,35 @@ function S:HandleButton(button, strip, isDeclineButton, useCreateBackdrop, noSet
 	button.isSkinned = true
 end
 
-function S:HandleButtonHighlight(frame, r, g, b)
-	if frame.SetHighlightTexture then
-		frame:SetHighlightTexture("")
-	end
-
+function S:HandleButtonHighlight(frame, r, g, b, a)
 	if not r then r = 0.9 end
 	if not g then g = 0.9 end
 	if not b then b = 0.9 end
+	if not a then a = 0.35 end
 
-	local leftGrad = frame:CreateTexture(nil, "HIGHLIGHT")
-	leftGrad:Size(frame:GetWidth() * 0.5, frame:GetHeight() * 0.95)
-	leftGrad:Point("LEFT", frame, "CENTER")
-	leftGrad:SetTexture(E.media.blankTex)
-	leftGrad:SetGradientAlpha("Horizontal", r, g, b, 0.35, r, g, b, 0)
+	local highlightTexture
 
-	local rightGrad = frame:CreateTexture(nil, "HIGHLIGHT")
-	rightGrad:Size(frame:GetWidth() * 0.5, frame:GetHeight() * 0.95)
-	rightGrad:Point("RIGHT", frame, "CENTER")
-	rightGrad:SetTexture(E.media.blankTex)
-	rightGrad:SetGradientAlpha("Horizontal", r, g, b, 0, r, g, b, 0.35)
+	if frame.SetHighlightTexture then
+		highlightTexture = frame:GetHighlightTexture()
+		highlightTexture:SetAllPoints(frame)
+	elseif frame.SetTexture then
+		highlightTexture = frame
+		frame:SetAllPoints(frame:GetParent())
+	elseif frame.HighlightTexture then
+		highlightTexture = frame.HighlightTexture
+	else
+		highlightTexture = frame:CreateTexture(nil, "HIGHLIGHT")
+		highlightTexture:SetAllPoints(frame)
+		frame.HighlightTexture = highlightTexture
+	end
+
+	highlightTexture:SetTexture(E.Media.Textures.Highlight)
+	highlightTexture:SetVertexColor(r, g, b, a)
 end
 
 local function GrabScrollBarElement(frame, element)
 	local FrameName = frame:GetName()
-	return frame[element] or FrameName and (_G[FrameName..element] or strfind(FrameName, element)) or nil
+	return frame[element] or FrameName and (_G[FrameName..element] or find(FrameName, element)) or nil
 end
 
 function S:HandleScrollBar(frame, thumbTrimY, thumbTrimX)
@@ -213,7 +217,7 @@ function S:HandleEditBox(frame)
 		if _G[EditBoxName.."Right"] then _G[EditBoxName.."Right"]:SetAlpha(0) end
 		if _G[EditBoxName.."Mid"] then _G[EditBoxName.."Mid"]:SetAlpha(0) end
 
-		if strfind(EditBoxName, "Silver") or strfind(EditBoxName, "Copper") then
+		if find(EditBoxName, "Silver") or find(EditBoxName, "Copper") then
 			frame.backdrop:Point("BOTTOMRIGHT", -12, -2)
 		end
 	end
@@ -447,9 +451,11 @@ function S:HandleCloseButton(f, point)
 	end
 end
 
+local sliderOnDisable = function(self) self:GetThumbTexture():SetVertexColor(0.6, 0.6, 0.6, 0.8) end
+local sliderOnEnable = function(self) self:GetThumbTexture():SetVertexColor(1, 0.82, 0, 0.8) end
+
 function S:HandleSliderFrame(frame)
 	local orientation = frame:GetOrientation()
-	local SIZE = 12
 
 	frame:StripTextures()
 	frame:SetTemplate()
@@ -457,25 +463,21 @@ function S:HandleSliderFrame(frame)
 
 	local thumb = frame:GetThumbTexture()
 	thumb:SetVertexColor(1, 0.82, 0, 0.8)
-	thumb:Size(SIZE - 2, SIZE - 2)
+	thumb:Size(10)
 
-	frame:HookScript("OnDisable", function(slider)
-		slider:GetThumbTexture():SetVertexColor(0.6, 0.6, 0.6, 0.8)
-	end)
-	frame:HookScript("OnEnable", function(slider)
-		slider:GetThumbTexture():SetVertexColor(1, 0.82, 0, 0.8)
-	end)
+	frame:HookScript("OnDisable", sliderOnDisable)
+	frame:HookScript("OnEnable", sliderOnEnable)
 
 	if orientation == "VERTICAL" then
-		frame:Width(SIZE)
+		frame:Width(12)
 	else
-		frame:Height(SIZE)
+		frame:Height(12)
 
 		for i = 1, frame:GetNumRegions() do
 			local region = select(i, frame:GetRegions())
 			if region and region:IsObjectType("FontString") then
 				local point, anchor, anchorPoint, x, y = region:GetPoint()
-				if strfind(anchorPoint, "BOTTOM") then
+				if find(anchorPoint, "BOTTOM") then
 					region:Point(point, anchor, anchorPoint, x, y - 4)
 				end
 			end
@@ -496,7 +498,7 @@ function S:HandleIconSelectionFrame(frame, numIcons, buttonNameTemplate, frameNa
 
 	frame:CreateBackdrop("Transparent")
 	frame.backdrop:Point("TOPLEFT", frame, "TOPLEFT", 10, -12)
-	frame.backdrop:Point("BOTTOMRIGHT", cancelButton, "BOTTOMRIGHT", 5, -5)
+	frame.backdrop:Point("BOTTOMRIGHT", cancelButton, "BOTTOMRIGHT", 8, -8)
 
 	S:HandleButton(okayButton)
 	S:HandleButton(cancelButton)
@@ -521,11 +523,11 @@ function S:HandleNextPrevButton(btn, arrowDir, color, noBackdrop, stipTexts)
 		local ButtonName = btn:GetName() and lower(btn:GetName())
 
 		if ButtonName then
-			if (strfind(ButtonName, "left") or strfind(ButtonName, "prev") or strfind(ButtonName, "decrement")) then
+			if (find(ButtonName, "left") or find(ButtonName, "prev") or find(ButtonName, "decrement")) then
 				arrowDir = "left"
-			elseif (strfind(ButtonName, "right") or strfind(ButtonName, "next") or strfind(ButtonName, "increment")) then
+			elseif (find(ButtonName, "right") or find(ButtonName, "next") or find(ButtonName, "increment")) then
 				arrowDir = "right"
-			elseif (strfind(ButtonName, "scrollup") or strfind(ButtonName, "upbutton") or strfind(ButtonName, "top") or strfind(ButtonName, "promote")) then
+			elseif (find(ButtonName, "scrollup") or find(ButtonName, "upbutton") or find(ButtonName, "top") or find(ButtonName, "promote")) then
 				arrowDir = "up"
 			end
 		end
@@ -611,11 +613,7 @@ function S:ADDON_LOADED(_, addon)
 end
 
 local function SetPanelWindowInfo(frame, name, value, igroneUpdate)
-	frame:SetAttribute("UIPanelLayout-"..name, value)
-
-	if name == "width" then
-		frame.__uiPanelWidth = value
-	end
+	frame:SetAttribute(name, value)
 
 	if not igroneUpdate and frame:IsShown() then
 		UpdateUIPanelPositions(frame)
@@ -628,42 +626,105 @@ function S:SetUIPanelWindowInfo(frame, name, value, offset, igroneUpdate)
 	local frameName = frame and frame.GetName and frame:GetName()
 	if not (frameName and UIPanelWindows[frameName]) then return end
 
-	if name == "width" then
+	name = "UIPanelLayout-"..name
+
+	if name == "UIPanelLayout-width" then
 		value = E:Scale(value or (frame.backdrop and frame.backdrop:GetWidth() or frame:GetWidth())) + (offset or 0) + UI_PANEL_OFFSET
 	end
 
-	if self.inCombat or InCombatLockdown() then
+	local valueChanged = frame:GetAttribute(name) ~= value
+
+	if not frame:CanChangeAttribute() then
 		local frameInfo = format("%s-%s", frameName, name)
 
 		if self.uiPanelQueue[frameInfo] then
-			if name == "width" and frame.__uiPanelWidth and frame.__uiPanelWidth == value then
-				self.uiPanelQueue[frameInfo] = nil
+			if not valueChanged then
+				self.uiPanelQueue[frameInfo][3] = nil
 			else
 				self.uiPanelQueue[frameInfo][3] = value
 				self.uiPanelQueue[frameInfo][4] = igroneUpdate
 			end
-		else
+		elseif valueChanged then
 			self.uiPanelQueue[frameInfo] = {frame, name, value, igroneUpdate}
+
+			if not self.inCombat then
+				self.inCombat = true
+				S:RegisterEvent("PLAYER_REGEN_ENABLED")
+			end
 		end
+	elseif valueChanged then
+		SetPanelWindowInfo(frame, name, value, igroneUpdate)
+	end
+end
+
+function S:SetBackdropHitRect(frame, backdrop, clampRect, attempt)
+	if not frame then return end
+
+	backdrop = backdrop or frame.backdrop
+	if not backdrop then return end
+
+	local left = frame:GetLeft()
+	local bleft = backdrop:GetLeft()
+
+	if not left or not bleft then
+		if attempt ~= 10 then
+			E:Delay(0.1, S.SetBackdropHitRect, S, frame, backdrop, clampRect, attempt and attempt + 1 or 1)
+		end
+
+		return
+	end
+
+	left = floor(left + 0.5)
+	local right = floor(frame:GetRight() + 0.5)
+	local top = floor(frame:GetTop() + 0.5)
+	local bottom = floor(frame:GetBottom() + 0.5)
+
+	bleft = floor(bleft + 0.5)
+	local bright = floor(backdrop:GetRight() + 0.5)
+	local btop = floor(backdrop:GetTop() + 0.5)
+	local bbottom = floor(backdrop:GetBottom() + 0.5)
+
+	left = bleft - left
+	right = right - bright
+	top = top - btop
+	bottom = bbottom - bottom
+
+	if not frame:CanChangeAttribute() then
+		self.hitRectQueue[frame] = {left, right, top, bottom, clampRect}
 
 		if not self.inCombat then
 			self.inCombat = true
 			S:RegisterEvent("PLAYER_REGEN_ENABLED")
 		end
 	else
-		SetPanelWindowInfo(frame, name, value, igroneUpdate)
+		frame:SetHitRectInsets(left, right, top, bottom)
+
+		if clampRect then
+			frame:SetClampRectInsets(left, -right, -top, bottom)
+		end
 	end
 end
 
 function S:PLAYER_REGEN_ENABLED()
 	self.inCombat = nil
-	S:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 
-	for _, info in pairs(self.uiPanelQueue) do
-		SetPanelWindowInfo(info[1], info[2], info[3], info[4])
+	for frameInfo, info in pairs(self.uiPanelQueue) do
+		if info[3] then
+			SetPanelWindowInfo(info[1], info[2], info[3], info[4])
+		end
+		self.uiPanelQueue[frameInfo] = nil
 	end
 
-	twipe(self.uiPanelQueue)
+	for frame, info in pairs(self.hitRectQueue) do
+		frame:SetHitRectInsets(info[1], info[2], info[3], info[4])
+
+		if info[5] then
+			frame:SetClampRectInsets(info[1], info[2], info[3], info[4])
+		end
+
+		self.hitRectQueue[frame] = nil
+	end
 end
 
 --Add callback for skin that relies on another addon.
@@ -740,8 +801,11 @@ end
 
 function S:Initialize()
 	self.Initialized = true
+
 	self.db = E.private.skins
+
 	self.uiPanelQueue = {}
+	self.hitRectQueue = {}
 
 	S:SkinAce3()
 

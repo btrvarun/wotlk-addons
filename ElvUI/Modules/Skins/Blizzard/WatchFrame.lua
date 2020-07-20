@@ -12,7 +12,7 @@ local GetQuestIndexForWatch = GetQuestIndexForWatch
 local GetQuestLogTitle = GetQuestLogTitle
 local hooksecurefunc = hooksecurefunc
 
-local function LoadSkin()
+S:AddCallback("Skin_WatchFrame", function()
 	if not E.private.skins.blizzard.enable or not E.private.skins.blizzard.watchframe then return end
 
 	-- WatchFrame Expand/Collapse Button
@@ -23,17 +23,15 @@ local function LoadSkin()
 	WatchFrameCollapseExpandButton.tex:SetInside()
 	WatchFrameCollapseExpandButton:SetHighlightTexture("Interface\\Buttons\\UI-PlusButton-Hilight", "ADD")
 	WatchFrameCollapseExpandButton:SetFrameStrata("MEDIUM")
-	WatchFrameCollapseExpandButton:Point("TOPRIGHT", -20, -2)
+	WatchFrameCollapseExpandButton:Point("TOPRIGHT", 0, -2)
 
 	hooksecurefunc("WatchFrame_Expand", function()
 		WatchFrameCollapseExpandButton.tex:SetTexture(E.Media.Textures.MinusButton)
-
 		WatchFrame:Width(WATCHFRAME_EXPANDEDWIDTH)
 	end)
 
 	hooksecurefunc("WatchFrame_Collapse", function()
 		WatchFrameCollapseExpandButton.tex:SetTexture(E.Media.Textures.PlusButton)
-
 		WatchFrame:Width(WATCHFRAME_EXPANDEDWIDTH)
 	end)
 
@@ -156,6 +154,4 @@ local function LoadSkin()
 			poiButton.bg:SetBackdropColor(unpack(E.media.backdropcolor))
 		end
 	end)
-end
-
-S:AddCallback("Skin_WatchFrame", LoadSkin)
+end)

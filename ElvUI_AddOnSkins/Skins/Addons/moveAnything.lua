@@ -4,13 +4,16 @@ local S = E:GetModule("Skins")
 local _G = _G
 local unpack = unpack
 
+-- MoveAnything 3.3.5-10
+-- https://www.curseforge.com/wow/addons/move-anything/files/434496
+
 local function LoadSkin()
 	if not E.private.addOnSkins.MoveAnything then return end
 
 	local SPACING = 1 + (E.Spacing * 2)
 
 	for i = 1, 20 do
-		_G["MAMover" .. i .. "Backdrop"]:SetTemplate("Transparent", nil, nil, true)
+		_G["MAMover" .. i .. "Backdrop"]:SetTemplate("Transparent")
 
 		_G["MAMover" .. i]:HookScript("OnShow", function(self)
 			_G[self:GetName() .. "Backdrop"]:SetBackdropBorderColor(unpack(E["media"].rgbvaluecolor))

@@ -20,14 +20,15 @@ P.addOnSkins = {
 	dbmFont = "PT Sans Narrow",
 	dbmFontSize = 12,
 	dbmFontOutline = "OUTLINE",
+	dbmTemplate = "Default",
 
 	weakAuraAuraBar = true,
 	weakAuraIconCooldown = true,
 
 	chatBarSize = 16,
 	chatBarSpacing = 1,
-	chatBarTextPoint = "LEFT",
-	chatBarTextXOffset = -3,
+	chatBarTextPoint = "CENTER",
+	chatBarTextXOffset = -1,
 	chatBarTextYOffset = 0,
 
 	bigwigsBarHeight = 14,

@@ -2,8 +2,10 @@ local E, L, V, P, G = unpack(ElvUI)
 local S = E:GetModule("Skins")
 
 local _G = _G
-local select = select
 local unpack = unpack
+
+-- TellMeWhen 1.2.5b1
+-- https://www.curseforge.com/wow/addons/tellmewhen/files/448968
 
 local function LoadSkin()
 	if not E.private.addOnSkins.TellMeWhen then return end
@@ -33,7 +35,7 @@ local function LoadSkin()
 					if icon and not icon.isSkinned then
 						icon:SetTemplate("Default")
 
-						select(1, icon:GetRegions()):SetTexture(nil)
+						icon:GetRegions():SetTexture(nil)
 
 						_G[iconName .. "Texture"]:SetTexCoord(unpack(E.TexCoords))
 						_G[iconName .. "Texture"]:SetInside()
@@ -64,7 +66,7 @@ local function LoadSkin()
 						_G[iconName]:StyleButton()
 						icon:SetTemplate("Default")
 
-						select(1, icon:GetRegions()):SetTexture(nil)
+						icon:GetRegions():SetTexture(nil)
 
 						_G[iconName .. "Icon"]:SetTexCoord(unpack(E.TexCoords))
 						_G[iconName .. "Icon"]:SetInside()

@@ -5,13 +5,11 @@ local TT = E:GetModule("Tooltip")
 --Lua functions
 --WoW API / Variables
 
-local function LoadSkin()
+S:AddCallback("Skin_Tooltip", function()
 	if not E.private.skins.blizzard.enable or not E.private.skins.blizzard.tooltip then return end
 
-	S:HandleCloseButton(ItemRefCloseButton)
+	S:HandleCloseButton(ItemRefCloseButton, ItemRefTooltip)
 
-	local GameTooltip = _G["GameTooltip"]
-	local GameTooltipStatusBar = _G["GameTooltipStatusBar"]
 	local tooltips = {
 		GameTooltip,
 		ItemRefTooltip,
@@ -44,6 +42,4 @@ local function LoadSkin()
 
 	TT:SecureHookScript(GameTooltip, "OnSizeChanged", "CheckBackdropColor")
 	TT:SecureHookScript(GameTooltip, "OnUpdate", "CheckBackdropColor")
-end
-
-S:AddCallback("Skin_Tooltip", LoadSkin)
+end)

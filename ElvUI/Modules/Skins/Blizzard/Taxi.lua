@@ -4,7 +4,7 @@ local S = E:GetModule("Skins")
 --Lua functions
 --WoW API / Variables
 
-local function LoadSkin()
+S:AddCallback("Skin_Taxi", function()
 	if not E.private.skins.blizzard.enable or not E.private.skins.blizzard.taxi then return end
 
 	TaxiFrame:StripTextures()
@@ -14,12 +14,23 @@ local function LoadSkin()
 	TaxiFrame.backdrop:Point("BOTTOMRIGHT", -32, 76)
 
 	S:SetUIPanelWindowInfo(TaxiFrame, "width")
+	S:SetBackdropHitRect(TaxiFrame)
 
 	TaxiPortrait:Kill()
 
 	S:HandleCloseButton(TaxiCloseButton, TaxiFrame.backdrop)
 
 	TaxiRouteMap:CreateBackdrop("Default")
-end
 
-S:AddCallback("Skin_Taxi", LoadSkin)
+	local TAXI_MAP_WIDTH = 331		-- orig 316
+	local TAXI_MAP_HEIGHT = 369		-- orig 352
+
+	_G.TAXI_MAP_WIDTH = TAXI_MAP_WIDTH
+	_G.TAXI_MAP_HEIGHT = TAXI_MAP_HEIGHT
+
+	TaxiMap:Size(TAXI_MAP_WIDTH, TAXI_MAP_HEIGHT)
+	TaxiRouteMap:Size(TAXI_MAP_WIDTH, TAXI_MAP_HEIGHT)
+
+	TaxiMap:Point("TOP", -11, -48)
+	TaxiRouteMap:Point("TOP", -11, -48)
+end)
