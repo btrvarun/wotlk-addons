@@ -1,0 +1,8 @@
+## Interface: 30300
+## Title: Thanks for the Buffs!
+## Notes: Thanks people when they buff you.
+## Author: Raeli
+## Version: 0.1
+Core.lua
+
+
