@@ -14,7 +14,9 @@ E.Media = {
 		Expressway = M..[[Fonts\Expressway.ttf]],
 		Homespun = M..[[Fonts\Homespun.ttf]],
 		Invisible = M..[[Fonts\Invisible.ttf]],
-		PTSansNarrow = M..[[Fonts\PTSansNarrow.ttf]]
+		PTSansNarrow = M..[[Fonts\PTSansNarrow.ttf]],
+		Ubuntu = M..[[Fonts\Ubuntu.ttf]],
+		Roboto = M..[[Fonts\Roboto.ttf]]
 	},
 	Sounds = {
 		AwwCrap = M..[[Sounds\AwwCrap.ogg]],
@@ -138,6 +140,8 @@ LSM:Register("border", "ElvUI GlowBorder", E.Media.Textures.GlowTex)
 LSM:Register("font", "Continuum Medium", E.Media.Fonts.ContinuumMedium)
 LSM:Register("font", "Die Die Die!", E.Media.Fonts.DieDieDie, LSM.LOCALE_BIT_ruRU + LSM.LOCALE_BIT_western)
 LSM:Register("font", "Action Man", E.Media.Fonts.ActionMan)
+LSM:Register("font", "Ubuntu", E.Media.Fonts.Ubuntu)
+LSM:Register("font", "Roboto", E.Media.Fonts.Roboto)
 LSM:Register("font", "Expressway", E.Media.Fonts.Expressway, LSM.LOCALE_BIT_ruRU + LSM.LOCALE_BIT_western)
 LSM:Register("font", "PT Sans Narrow", E.Media.Fonts.PTSansNarrow, LSM.LOCALE_BIT_ruRU + LSM.LOCALE_BIT_western)
 LSM:Register("font", "Homespun", E.Media.Fonts.Homespun, LSM.LOCALE_BIT_ruRU + LSM.LOCALE_BIT_western)
